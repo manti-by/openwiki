@@ -34,8 +34,8 @@ test("parseAgentJson tolerates stray prose around the object", () => {
   assert.deepEqual(parseAgentJson(reply), { skip: true })
 })
 
-test("parseAgentJson throws when no JSON object is present", () => {
-  assert.throws(() => parseAgentJson("no json here"))
+test("parseAgentJson returns {skip:true} when no JSON object is present", () => {
+  assert.deepEqual(parseAgentJson("no json here"), { skip: true })
 })
 
 test("buildWikiAgentPrompt embeds transcript, session id, and today's date", () => {

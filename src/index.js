@@ -36,6 +36,17 @@ export const OpenWiki = async ({ client, directory }) => {
           return initWiki(directory, projectName)
         },
       }),
+      openwiki_write: tool({
+        description:
+          "Force the Wiki Agent to write a wiki page for the given session right now. The agent decides whether the session is worth documenting and creates/updates a page under wiki/pages/ and the INDEX.md entry. Safe to call on any session — if the session already has a page it updates it in place.",
+        args: {
+          sessionId: tool.schema.string(),
+        },
+        async execute({ sessionId }) {
+          await onSessionIdle({ client, directory, sessionId })
+          return `Wiki Agent finished processing session ${sessionId}. If the session was worth documenting, a page was written or updated in wiki/pages/.`
+        },
+      }),
     },
     event: async ({ event }) => {
       if (event.type !== "session.idle") return
@@ -94,12 +105,16 @@ async function onSessionIdle({ client, directory, sessionId }) {
   const today = new Date().toISOString().slice(0, 10)
 
   const prompt = buildWikiAgentPrompt({ readme, template, transcript, sessionId, today, existingPage })
+  const model = await resolveModel(directory, client, messages)
 
   const childSession = await client.session.create({ body: { title: `openwiki: ${sessionId}` } })
   const childId = childSession?.data?.id ?? childSession?.id
   const result = await client.session.prompt({
     path: { id: childId },
-    body: { parts: [{ type: "text", text: prompt }] },
+    body: {
+      model: model ?? undefined,
+      parts: [{ type: "text", text: prompt }],
+    },
   })
 
   const replyText = extractReplyText(result)
@@ -123,4 +138,48 @@ function extractReplyText(result) {
     .filter((p) => p.type === "text" && typeof p.text === "string")
     .map((p) => p.text)
     .join("\n")
+}
+
+function parseModelString(str) {
+  const slash = str.indexOf("/")
+  if (slash === -1) return null
+  return {
+    providerID: str.slice(0, slash),
+    modelID: str.slice(slash + 1),
+  }
+}
+
+async function resolveModel(directory, client, messages) {
+  const configPath = path.join(directory, "openwiki.json")
+  try {
+    const content = await fs.readFile(configPath, "utf8")
+    const parsed = JSON.parse(content)
+    if (parsed.model && typeof parsed.model === "string") {
+      const model = parseModelString(parsed.model)
+      if (model) return model
+    }
+  } catch {
+    // not found or invalid — continue to fallback
+  }
+
+  const firstUser = messages.find((m) => {
+    const info = m.info ?? m
+    return info.role === "user"
+  })
+  if (firstUser) {
+    const info = firstUser.info ?? firstUser
+    if (info.model?.providerID && info.model?.modelID) {
+      return { providerID: info.model.providerID, modelID: info.model.modelID }
+    }
+  }
+
+  try {
+    const configResp = await client.config.get()
+    const config = configResp?.data ?? configResp
+    if (config?.model) return parseModelString(config.model)
+  } catch {
+    // give up
+  }
+
+  return null
 }

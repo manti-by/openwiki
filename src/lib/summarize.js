@@ -71,12 +71,19 @@ export function transcriptFromMessages(messages) {
 }
 
 /** Pulls the JSON object out of a model reply that should be pure JSON but
- *  may come wrapped in fences or stray whitespace. */
+ *  may come wrapped in fences or stray whitespace. Returns `{skip: true}`
+ *  when the reply isn't parseable, so a model that ignores the JSON instruction
+ *  is treated as "skip this session" rather than crashing the host. */
 export function parseAgentJson(reply) {
+  if (!reply) return { skip: true }
   const fenced = /```(?:json)?\n([\s\S]*?)\n```/.exec(reply)
   const raw = fenced ? fenced[1] : reply
   const start = raw.indexOf("{")
   const end = raw.lastIndexOf("}")
-  if (start === -1 || end === -1) throw new Error("Wiki Agent reply did not contain a JSON object")
-  return JSON.parse(raw.slice(start, end + 1))
+  if (start === -1 || end === -1) return { skip: true }
+  try {
+    return JSON.parse(raw.slice(start, end + 1))
+  } catch {
+    return { skip: true }
+  }
 }

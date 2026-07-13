@@ -72,6 +72,18 @@ Notes:
 - Point the log redirect somewhere you'll actually look, or wire cron's output to mail/a
   monitoring hook — a silently-failing cron job defeats the purpose.
 
+## Configuration
+
+Create `openwiki.json` in the project root to set the Wiki Agent's model:
+
+```json
+{
+  "model": "anthropic/claude-sonnet-4-20250514"
+}
+```
+
+If the file is absent or has no `model` property, the Wiki Agent uses the same model as the current session, then falls back to the default from `opencode.json`.
+
 ## Layout
 
 ```

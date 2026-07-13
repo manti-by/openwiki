@@ -1,6 +1,6 @@
 {
-  "name": "opencode-openwiki",
-  "version": "0.1.0",
+  "name": "openwiki",
+  "version": "0.1.1",
   "description": "OpenCode plugin that maintains a local, per-project session wiki: a Wiki Agent summarizes noteworthy sessions into wiki/, and a Consistency Agent keeps the index and pages honest over time.",
   "type": "module",
   "main": "src/index.js",
@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
+    "@opencode-ai/plugin": "^1.15.7",
     "eslint": "^9.15.0",
     "globals": "^15.12.0"
   }
