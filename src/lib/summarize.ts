@@ -1,7 +1,15 @@
-/** Builds the instruction sent to the ephemeral Wiki Agent session. The agent
- *  is asked to reply with a single strict-JSON object so the plugin never has
- *  to scrape prose out of a markdown reply. */
-export function buildWikiAgentPrompt({ readme, template, transcript, sessionId, today, existingPage }) {
+import type { ExistingPage } from "./wiki.js"
+
+export interface WikiAgentInput {
+  readme: string
+  template: string
+  transcript: string
+  sessionId: string
+  today: string
+  existingPage: ExistingPage | null
+}
+
+export function buildWikiAgentPrompt({ readme, template, transcript, sessionId, today, existingPage }: WikiAgentInput): string {
   const existingBlock = existingPage
     ? `This session already has a wiki page from an earlier point in the same
 conversation. UPDATE it in place — reuse the exact same filename, and revise
@@ -12,6 +20,10 @@ newest turn.
 ${existingPage.content}
 `
     : `This session has no wiki page yet.`
+
+  const filenameLine = existingPage
+    ? `"filename": "${existingPage.filename}"`
+    : `"filename": "${today}-<kebab-case-topic>.md"`
 
   return `You are the OpenWiki Wiki Agent. You maintain a per-project session wiki.
 
@@ -44,9 +56,9 @@ or, if the session earns a page:
 {
   "skip": false,
   "title": "<human-readable title>",
-  "filename": "${existingPage ? existingPage.filename : `${today}-<kebab-case-topic>.md`}",
+  ${filenameLine},
   "content": "<full page content, frontmatter + body, following TEMPLATE.md exactly, with session_id set to ${sessionId}>",
-  "indexLine": "- [<title>](pages/<filename>) — <one-line summary> (${today})"
+  "indexLine": "- [<title>](pages/${existingPage ? existingPage.filename : `${today}-<kebab-case-topic>.md`}) — <one-line summary> (${today})"
 }
 
 --- session transcript ---
@@ -54,15 +66,14 @@ ${transcript}
 `
 }
 
-/** Extracts the transcript text opencode gives back from client.session.messages(). */
-export function transcriptFromMessages(messages) {
+export function transcriptFromMessages(messages: any[]): string {
   return messages
-    .map((m) => {
+    .map((m: any) => {
       const role = m.info?.role ?? m.role ?? "unknown"
       const parts = m.parts ?? []
       const text = parts
-        .filter((p) => p.type === "text" && typeof p.text === "string")
-        .map((p) => p.text)
+        .filter((p: any) => p.type === "text" && typeof p.text === "string")
+        .map((p: any) => p.text)
         .join("\n")
       return text ? `### ${role}\n${text}` : null
     })
@@ -70,11 +81,7 @@ export function transcriptFromMessages(messages) {
     .join("\n\n")
 }
 
-/** Pulls the JSON object out of a model reply that should be pure JSON but
- *  may come wrapped in fences or stray whitespace. Returns `{skip: true}`
- *  when the reply isn't parseable, so a model that ignores the JSON instruction
- *  is treated as "skip this session" rather than crashing the host. */
-export function parseAgentJson(reply) {
+export function parseAgentJson(reply: string): Record<string, unknown> {
   if (!reply) return { skip: true }
   const fenced = /```(?:json)?\n([\s\S]*?)\n```/.exec(reply)
   const raw = fenced ? fenced[1] : reply

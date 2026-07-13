@@ -1,12 +1,18 @@
-.PHONY: install lint test check
+.PHONY: install build lint typecheck test check
 
 install:
-	npm install
+	bun install
+
+build:
+	bun run build
 
 lint:
-	npm run lint
+	bun run lint
+
+typecheck:
+	bun run typecheck
 
 test:
-	npm test
+	bun test
 
-check: lint test
+check: lint typecheck test

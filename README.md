@@ -4,7 +4,7 @@ An [OpenCode](https://opencode.ai) plugin that maintains a local, per-project se
 
 - A **Wiki Agent** runs automatically in the background after each session goes idle. It
   decides whether the session is worth recording and, if so, writes or updates a page in
-  `wiki/`.
+  `wiki/`, can be run manually with the command `/wiki-write`.
 - A **Consistency Agent**, run on demand via `/wiki-consistency`, cross-checks pages for
   contradictions, resolves what it can against the current codebase, and files anything it
   can't resolve as a question in `wiki/QUESTIONS.md` for a human to answer.
@@ -21,21 +21,21 @@ Add the package to your project's `opencode.json`:
 }
 ```
 
-(Until published, point OpenCode at this directory directly — copy or symlink it into
+(Until published, point OpenCode at this directory directly - copy or symlink it into
 `.opencode/plugins/openwiki`.)
 
 ## Usage
 
 1. Run `/wiki-init` once per project. This scaffolds `wiki/` (`README.md`, `TEMPLATE.md`,
    `INDEX.md`, `QUESTIONS.md`, `pages/`) from the bundled templates, and installs the
-    `/wiki-init`, `/wiki-write`, and `/wiki-consistency` commands into `.opencode/commands/`. Nothing happens
+   `/wiki-init`, `/wiki-write`, and `/wiki-consistency` commands into `.opencode/commands/`. Nothing happens
    automatically before this — the plugin does no scaffolding on its own.
- 2. Work normally. After each session goes idle, the Wiki Agent decides whether it earned a
-    page (skipping quick Q&A and small talk) and, if so, writes or updates
-    `wiki/pages/YYYY-MM-DD-topic.md` and keeps `wiki/INDEX.md` current.
- 3. Run `/wiki-write` at any time to force the Wiki Agent to evaluate the current session
-    immediately (useful if you want to capture a session before it goes idle).
- 4. Run `/wiki-consistency` periodically (or whenever something looks stale) to cluster
+2. Work normally. After each session goes idle, the Wiki Agent decides whether it earned a
+   page (skipping quick Q&A and small talk) and, if so, writes or updates
+   `wiki/pages/YYYY-MM-DD-topic.md` and keeps `wiki/INDEX.md` current.
+3. Run `/wiki-write` at any time to force the Wiki Agent to evaluate the current session
+   immediately (useful if you want to capture a session before it goes idle).
+4. Run `/wiki-consistency` periodically (or whenever something looks stale) to cluster
    pages by topic, cross-check them, resolve discrepancies, rebuild the "By topic" section
    of the index, and file open questions.
 
@@ -80,7 +80,7 @@ Create `openwiki.json` in the project root to set the Wiki Agent's model:
 
 ```json
 {
-  "model": "anthropic/claude-sonnet-4-20250514"
+  "model": "opencode/deepseek-v4-flash-free"
 }
 ```
 
@@ -89,9 +89,10 @@ If the file is absent or has no `model` property, the Wiki Agent uses the same m
 ## Layout
 
 ```
-src/            plugin code (the event hook + the openwiki_init tool)
+src/            TypeScript plugin source (compiled to dist/ by bun build)
 templates/      wiki/ scaffold: README.md, TEMPLATE.md, INDEX.md, QUESTIONS.md
 commands/       /wiki-init, /wiki-write, and /wiki-consistency command definitions
+dist/           Compiled plugin output (generated, not committed)
 ```
 
 ## How the Wiki Agent works
@@ -111,3 +112,15 @@ On `session.idle`, the plugin:
 
 The page-worthiness call always belongs to the Wiki Agent, not a hardcoded heuristic —
 the plugin only pre-filters near-empty transcripts to avoid spawning a subagent for nothing.
+
+## Development
+
+Built with [Bun](https://bun.sh) and [TypeScript](https://www.typescriptlang.org/).
+
+```sh
+bun install              # install dependencies
+bun run build            # compile src/ to dist/
+bun test                 # run tests
+bun run typecheck        # type-check without emitting
+bun run lint             # lint with ESLint
+```

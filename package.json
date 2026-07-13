@@ -1,11 +1,12 @@
 {
   "name": "openwiki",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "OpenCode plugin that maintains a local, per-project session wiki: a Wiki Agent summarizes noteworthy sessions into wiki/, and a Consistency Agent keeps the index and pages honest over time.",
   "type": "module",
-  "main": "src/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "files": [
-    "src",
+    "dist",
     "templates",
     "commands"
   ],
@@ -17,13 +18,19 @@
   ],
   "license": "AGPL-3.0",
   "scripts": {
+    "build": "bun build src/index.ts --outdir dist --target node --external @opencode-ai/plugin",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "node --test test/"
+    "test": "bun test",
+    "prepublishOnly": "bun run build"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
     "@opencode-ai/plugin": "^1.15.7",
+    "@types/node": "^22.0.0",
     "eslint": "^9.15.0",
-    "globals": "^15.12.0"
+    "globals": "^15.12.0",
+    "typescript": "^5.0.0",
+    "typescript-eslint": "^8.0.0"
   }
 }

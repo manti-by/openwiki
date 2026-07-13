@@ -1,1 +1,1 @@
-export { OpenWiki } from "../../src/index.js"
+export { OpenWiki } from "../../dist/index.js"

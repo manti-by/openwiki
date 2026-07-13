@@ -36,3 +36,9 @@ There is also a command to maintain wiki consistency. It runs an agent — the *
 6. Rebuilds the "By topic" section of INDEX.md from the clusters — topics with the most pages first.
 
 On a later run, the Consistency Agent picks up human answers written in QUESTIONS.md, applies them to the affected pages, and moves the entry to the Resolved section.
+
+## Tech stack
+
+- **TypeScript** — source in `src/` (`*.ts`), compiled to `dist/` via `bun build`.
+- **Bun** — package manager, test runner, and bundler. No npm or Node.js required.
+- **ESLint** with `typescript-eslint` — linting only (no formatter).

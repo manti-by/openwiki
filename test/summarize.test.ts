@@ -7,7 +7,7 @@ test("transcriptFromMessages joins text parts by role, dropping empty messages",
   const messages = [
     { info: { role: "user" }, parts: [{ type: "text", text: "hello" }] },
     { info: { role: "assistant" }, parts: [{ type: "text", text: "hi there" }] },
-    { info: { role: "assistant" }, parts: [{ type: "tool" }] }, // no text part
+    { info: { role: "assistant" }, parts: [{ type: "tool" }] },
   ]
   const transcript = transcriptFromMessages(messages)
   assert.match(transcript, /### user\nhello/)

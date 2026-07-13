@@ -18,12 +18,28 @@ const PACKAGE_ROOT = path.dirname(__dirname)
 const TEMPLATES_DIR = path.join(PACKAGE_ROOT, "templates")
 const COMMANDS_DIR = path.join(PACKAGE_ROOT, "commands")
 
-// Skip the Wiki Agent entirely for near-empty exchanges (e.g. an idle event
-// firing right after a one-word reply) — a cheap guard, not the page-worthiness
-// decision itself. That decision always belongs to the Wiki Agent.
 const MIN_TRANSCRIPT_CHARS = 80
 
-export const OpenWiki = async ({ client, directory }) => {
+interface OpenCodeClient {
+  session: {
+    messages: (args: { path: { id: string } }) => Promise<any>
+    create: (args: { body: { title: string } }) => Promise<any>
+    prompt: (args: { path: { id: string }; body: { model?: any; parts: any[] } }) => Promise<any>
+  }
+  config: {
+    get: () => Promise<any>
+  }
+}
+
+interface OpenCodeEvent {
+  type: string
+  properties?: {
+    sessionID?: string
+    sessionId?: string
+  }
+}
+
+export const OpenWiki = async ({ client, directory }: { client: OpenCodeClient; directory: string }) => {
   return {
     tool: {
       openwiki_init: tool({
@@ -32,7 +48,7 @@ export const OpenWiki = async ({ client, directory }) => {
         args: {
           projectName: tool.schema.string().optional(),
         },
-        async execute({ projectName }) {
+        async execute({ projectName }: { projectName?: string }) {
           return initWiki(directory, projectName)
         },
       }),
@@ -42,17 +58,17 @@ export const OpenWiki = async ({ client, directory }) => {
         args: {
           sessionId: tool.schema.string(),
         },
-        async execute({ sessionId }) {
+        async execute({ sessionId }: { sessionId: string }) {
           await onSessionIdle({ client, directory, sessionId })
           return `Wiki Agent finished processing session ${sessionId}. If the session was worth documenting, a page was written or updated in wiki/pages/.`
         },
       }),
     },
-    event: async ({ event }) => {
+    event: async ({ event }: { event: OpenCodeEvent }) => {
       if (event.type !== "session.idle") return
       const sessionId = event.properties?.sessionID ?? event.properties?.sessionId
       if (!sessionId) return
-      if (!(await isInitialized(directory))) return // no explicit /wiki-init yet — do nothing
+      if (!(await isInitialized(directory))) return
 
       try {
         await onSessionIdle({ client, directory, sessionId })
@@ -63,7 +79,7 @@ export const OpenWiki = async ({ client, directory }) => {
   }
 }
 
-async function initWiki(directory, projectName) {
+async function initWiki(directory: string, projectName?: string): Promise<string> {
   const root = wikiRoot(directory)
   const pages = pagesRoot(directory)
   await fs.mkdir(pages, { recursive: true })
@@ -91,7 +107,13 @@ async function initWiki(directory, projectName) {
   return `OpenWiki initialized for "${name}": ${filesWritten} wiki file(s) written to wiki/, ${commandsWritten} command(s) installed to .opencode/commands/.`
 }
 
-async function onSessionIdle({ client, directory, sessionId }) {
+interface OnSessionIdleInput {
+  client: OpenCodeClient
+  directory: string
+  sessionId: string
+}
+
+async function onSessionIdle({ client, directory, sessionId }: OnSessionIdleInput): Promise<void> {
   const messagesResp = await client.session.messages({ path: { id: sessionId } })
   const messages = messagesResp?.data ?? messagesResp ?? []
   const transcript = transcriptFromMessages(messages)
@@ -121,26 +143,31 @@ async function onSessionIdle({ client, directory, sessionId }) {
   const decision = parseAgentJson(replyText)
   if (decision.skip) return
 
-  const filename = existingPage ? existingPage.filename : decision.filename
+  const filename = existingPage ? existingPage.filename : (decision.filename as string)
   const pagePath = path.join(pagesRoot(directory), filename)
   await fs.mkdir(pagesRoot(directory), { recursive: true })
-  await fs.writeFile(pagePath, decision.content, "utf8")
+  await fs.writeFile(pagePath, decision.content as string, "utf8")
 
   const indexPath = path.join(wikiRoot(directory), "INDEX.md")
   const index = (await readIfExists(indexPath)) ?? ""
-  await fs.writeFile(indexPath, upsertIndexEntry(index, filename, decision.indexLine), "utf8")
+  await fs.writeFile(indexPath, upsertIndexEntry(index, filename, decision.indexLine as string), "utf8")
 }
 
-function extractReplyText(result) {
+function extractReplyText(result: any): string {
   const info = result?.data ?? result
   const parts = info?.parts ?? info?.message?.parts ?? []
   return parts
-    .filter((p) => p.type === "text" && typeof p.text === "string")
-    .map((p) => p.text)
+    .filter((p: any) => p.type === "text" && typeof p.text === "string")
+    .map((p: any) => p.text)
     .join("\n")
 }
 
-function parseModelString(str) {
+interface ModelRef {
+  providerID: string
+  modelID: string
+}
+
+function parseModelString(str: string): ModelRef | null {
   const slash = str.indexOf("/")
   if (slash === -1) return null
   return {
@@ -149,7 +176,7 @@ function parseModelString(str) {
   }
 }
 
-async function resolveModel(directory, client, messages) {
+async function resolveModel(directory: string, client: OpenCodeClient, messages: any[]): Promise<ModelRef | null> {
   const configPath = path.join(directory, "openwiki.json")
   try {
     const content = await fs.readFile(configPath, "utf8")
@@ -162,7 +189,7 @@ async function resolveModel(directory, client, messages) {
     // not found or invalid — continue to fallback
   }
 
-  const firstUser = messages.find((m) => {
+  const firstUser = messages.find((m: any) => {
     const info = m.info ?? m
     return info.role === "user"
   })
