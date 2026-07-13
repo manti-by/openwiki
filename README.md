@@ -17,23 +17,25 @@ Add the package to your project's `opencode.json`:
 
 ```json
 {
-  "plugin": ["opencode-openwiki"]
+  "plugin": ["openwiki"]
 }
 ```
 
 (Until published, point OpenCode at this directory directly — copy or symlink it into
-`.opencode/plugin/openwiki/`.)
+`.opencode/plugins/openwiki`.)
 
 ## Usage
 
 1. Run `/wiki-init` once per project. This scaffolds `wiki/` (`README.md`, `TEMPLATE.md`,
    `INDEX.md`, `QUESTIONS.md`, `pages/`) from the bundled templates, and installs the
-   `/wiki-init` and `/wiki-consistency` commands into `.opencode/commands/`. Nothing happens
+    `/wiki-init`, `/wiki-write`, and `/wiki-consistency` commands into `.opencode/commands/`. Nothing happens
    automatically before this — the plugin does no scaffolding on its own.
-2. Work normally. After each session goes idle, the Wiki Agent decides whether it earned a
-   page (skipping quick Q&A and small talk) and, if so, writes or updates
-   `wiki/pages/YYYY-MM-DD-topic.md` and keeps `wiki/INDEX.md` current.
-3. Run `/wiki-consistency` periodically (or whenever something looks stale) to cluster
+ 2. Work normally. After each session goes idle, the Wiki Agent decides whether it earned a
+    page (skipping quick Q&A and small talk) and, if so, writes or updates
+    `wiki/pages/YYYY-MM-DD-topic.md` and keeps `wiki/INDEX.md` current.
+ 3. Run `/wiki-write` at any time to force the Wiki Agent to evaluate the current session
+    immediately (useful if you want to capture a session before it goes idle).
+ 4. Run `/wiki-consistency` periodically (or whenever something looks stale) to cluster
    pages by topic, cross-check them, resolve discrepancies, rebuild the "By topic" section
    of the index, and file open questions.
 
@@ -89,7 +91,7 @@ If the file is absent or has no `model` property, the Wiki Agent uses the same m
 ```
 src/            plugin code (the event hook + the openwiki_init tool)
 templates/      wiki/ scaffold: README.md, TEMPLATE.md, INDEX.md, QUESTIONS.md
-commands/       /wiki-init and /wiki-consistency command definitions
+commands/       /wiki-init, /wiki-write, and /wiki-consistency command definitions
 ```
 
 ## How the Wiki Agent works
