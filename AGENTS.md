@@ -14,6 +14,7 @@ Entry: `src/index.ts` exports `OpenWiki({client, directory})`.
 | Test | `bun test` (bun built-in runner) |
 | Both | `make check` (lint -> typecheck -> test) |
 | Force wiki write | `/wiki-write` (calls `openwiki_write` tool for current session) |
+| Deduplicate pages | `/wiki-dedup` (finds ~85-90% similar pages, merges them keeping the newest date/session) |
 
 CI runs `make install && make build && make check` on bun 1.x.
 

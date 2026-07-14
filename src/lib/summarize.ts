@@ -45,6 +45,11 @@ one-off questions, small talk, sessions with no real investigation, debugging,
 review, or implementation work. Only write a page when the session matches one
 of the page types in TEMPLATE.md: debug, investigation, code-review, implementation.
 
+Also skip sessions whose transcript is primarily about maintaining the wiki
+itself — deduplicating pages, running consistency checks, repairing the index,
+or other wiki bookkeeping. These sessions modify the wiki but are not project
+work worth a page of their own.
+
 Reply with ONLY a single JSON object, no markdown fences, no prose outside it:
 
 {

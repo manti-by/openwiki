@@ -119,6 +119,12 @@ async function onSessionIdle({ client, directory, sessionId }: OnSessionIdleInpu
   const transcript = transcriptFromMessages(messages)
   if (transcript.length < MIN_TRANSCRIPT_CHARS) return
 
+  // Skip wiki maintenance sessions — these modify the wiki but aren't project
+  // work worth a page of their own. The inline commands (/wiki-dedup,
+  // /wiki-consistency) will appear in the user messages of the transcript.
+  const maintenancePatterns = [/\/wiki-dedup\b/, /\/wiki-consistency\b/]
+  if (maintenancePatterns.some((p) => p.test(transcript))) return
+
   const readme = await readIfExists(path.join(wikiRoot(directory), "README.md"))
   const template = await readIfExists(path.join(wikiRoot(directory), "TEMPLATE.md"))
   if (!readme || !template) return
