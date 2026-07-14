@@ -7,7 +7,7 @@ session_id: ses_0a2bb4272ffe1YREYHGaXc54Pu
 services: [core]
 branch: master
 tickets: []
-tags: [audit, exploration]
+tags: [audit, exploration, documentation]
 related: []
 ---
 
@@ -22,6 +22,15 @@ Thoroughly explored every source file in the OpenWiki codebase and compared the 
 ## Net effect
 
 The project's core functionality is verified and matches the documented architecture. Three documentation gaps were identified: the `/wiki-write` command is missing from `AGENTS.md`'s command table, the plugin name in `README.md` install docs (`opencode-openwiki`) differs from the actual `opencode.json` (`openwiki`), and the `.opencode/` deployment layering is not described anywhere.
+
+### Documentation Match
+
+The following aspects of the codebase match the documented architecture:
+
+- **Entry Point**: `src/index.js` correctly exports `OpenWiki`.
+- **Dependencies**: `@opencode-ai/plugin` is correctly identified as a dev dependency.
+- **Runtime Type**: Project correctly configured for ESM and zero-build workflow.
+- **Features**: Logic for init check, auto-summary on idle, and consistency checks are all confirmed present.
 
 ## Project Structure
 
@@ -42,10 +51,23 @@ Comparing actual code against `README.md` and `AGENTS.md` revealed three discrep
 2. **Plugin name mismatch** — `README.md` install docs say `"opencode-openwiki"` but actual `opencode.json` uses `"openwiki"`.
 3. **`.opencode/` deployment layering** — The `.opencode/plugins/openwiki.js` re-export shim and `.opencode/commands/` installed copies are not described in either document.
 
+### Summary Table
+
+| Item | Status | Note |
+| --- | --- | --- |
+| Core Logic | Match | All core features verified. |
+| Command List | Mismatch | `/wiki-write` missing from docs. |
+| Plugin Identity | Mismatch | Names differ between doc (`opencode_openwiki`) and config (`openwiki`). |
+| Infrastructure | Undocumented | `.opencode/` contents are more complex than documented. |
+
 ## Open questions
 
 - Should `AGENTS.md` and `README.md` be updated to reflect the actual plugin name and command set?
 - Should the `.opencode/` deployment structure be documented?
+
+## Note — merged duplicate
+
+This page was merged with the former `2026-07-13-audit-and-doc-verification.md` (same session `ses_0a2bb4272ffe1YREYHGaXc54Pu`). Both were produced from the same session as separate pages. The content has been consolidated here.
 
 ## Follow-ups
 

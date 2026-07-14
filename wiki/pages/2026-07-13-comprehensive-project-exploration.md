@@ -8,7 +8,7 @@ services: [core]
 branch: -
 tickets: []
 tags: [audit, exploration]
-related: [2026-07-13-project-audit.md, 2026-07-13-audit-and-doc-verification.md]
+related: [2026-07-13-project-audit.md]
 ---
 
 # Comprehensive Project Exploration and Audit
@@ -47,5 +47,5 @@ None — this session was pure exploration and data collection.
 
 ## References
 
-- Related: [[2026-07-13-project-audit.md]], [[2026-07-13-audit-and-doc-verification.md]]
+- Related: [[2026-07-13-project-audit.md]]
 - External: N/A
