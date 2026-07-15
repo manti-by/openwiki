@@ -16,7 +16,6 @@ import { buildWikiAgentPrompt, transcriptFromMessages, parseAgentJson } from "./
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const PACKAGE_ROOT = path.dirname(__dirname)
 const TEMPLATES_DIR = path.join(PACKAGE_ROOT, "templates")
-const COMMANDS_DIR = path.join(PACKAGE_ROOT, "commands")
 
 const MIN_TRANSCRIPT_CHARS = 80
 
@@ -94,17 +93,7 @@ async function initWiki(directory: string, projectName?: string): Promise<string
     filesWritten++
   }
 
-  const commandsDest = path.join(directory, ".opencode", "commands")
-  await fs.mkdir(commandsDest, { recursive: true })
-  let commandsWritten = 0
-  for (const file of await fs.readdir(COMMANDS_DIR)) {
-    const dest = path.join(commandsDest, file)
-    if (await exists(dest)) continue
-    await fs.copyFile(path.join(COMMANDS_DIR, file), dest)
-    commandsWritten++
-  }
-
-  return `OpenWiki initialized for "${name}": ${filesWritten} wiki file(s) written to wiki/, ${commandsWritten} command(s) installed to .opencode/commands/.`
+  return `OpenWiki initialized for "${name}": ${filesWritten} wiki file(s) written to wiki/.`
 }
 
 interface OnSessionIdleInput {

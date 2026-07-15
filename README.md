@@ -9,7 +9,7 @@ An [OpenCode](https://opencode.ai) plugin that maintains a local, per-project se
   contradictions, resolves what it can against the current codebase, and files anything it
   can't resolve as a question in `wiki/QUESTIONS.md` for a human to answer.
 
-See [DESCRIPTION.md](DESCRIPTION.md) for the full design spec.
+See [DOCS.md](DOCS.md) for the full design spec.
 
 ## Install
 
