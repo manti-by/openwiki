@@ -65,7 +65,7 @@ export function upsertIndexEntry(indexMarkdown: string, filename: string, entryL
   const lines = indexMarkdown.split("\n")
   const pagesHeading = lines.findIndex((l) => l.trim() === "## Pages")
   if (pagesHeading === -1) {
-    return indexMarkdown.trimEnd() + `\n\n## Pages\n\n${entryLine}\n`
+    return `${indexMarkdown.trimEnd()}\n\n## Pages\n\n${entryLine}\n`
   }
   let sectionEnd = lines.length
   for (let i = pagesHeading + 1; i < lines.length; i++) {
@@ -75,9 +75,7 @@ export function upsertIndexEntry(indexMarkdown: string, filename: string, entryL
     }
   }
   const before = lines.slice(0, pagesHeading + 1)
-  const section = lines
-    .slice(pagesHeading + 1, sectionEnd)
-    .filter((l) => l.trim().length > 0 && !l.includes(filename))
+  const section = lines.slice(pagesHeading + 1, sectionEnd).filter((l) => l.trim().length > 0 && !l.includes(filename))
   const after = lines.slice(sectionEnd)
 
   section.push(entryLine)

@@ -1,7 +1,7 @@
-import { test } from "node:test"
 import assert from "node:assert/strict"
+import { test } from "node:test"
 
-import { buildWikiAgentPrompt, transcriptFromMessages, parseAgentJson } from "../src/lib/summarize.js"
+import { buildWikiAgentPrompt, parseAgentJson, transcriptFromMessages } from "../src/lib/summarize.js"
 
 test("transcriptFromMessages joins text parts by role, dropping empty messages", () => {
   const messages = [
@@ -25,12 +25,12 @@ test("parseAgentJson parses a bare JSON object", () => {
 })
 
 test("parseAgentJson strips markdown fences", () => {
-  const reply = "```json\n{\"skip\": false, \"title\": \"x\"}\n```"
+  const reply = '```json\n{"skip": false, "title": "x"}\n```'
   assert.deepEqual(parseAgentJson(reply), { skip: false, title: "x" })
 })
 
 test("parseAgentJson tolerates stray prose around the object", () => {
-  const reply = "Sure, here you go:\n{\"skip\": true}\nLet me know if you need anything else."
+  const reply = 'Sure, here you go:\n{"skip": true}\nLet me know if you need anything else.'
   assert.deepEqual(parseAgentJson(reply), { skip: true })
 })
 

@@ -1,16 +1,16 @@
-import { test } from "node:test"
 import assert from "node:assert/strict"
-import { mkdtemp, rm, mkdir, writeFile } from "node:fs/promises"
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import path from "node:path"
+import { test } from "node:test"
 
 import {
-  slugify,
+  findExistingPageForSession,
+  isInitialized,
   pageFilename,
+  slugify,
   splitFrontmatter,
   upsertIndexEntry,
-  isInitialized,
-  findExistingPageForSession,
 } from "../src/lib/wiki.js"
 
 test("slugify lowercases, hyphenates, and strips punctuation", () => {

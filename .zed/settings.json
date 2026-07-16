@@ -37,10 +37,40 @@
     "TypeScript": {
       "format_on_save": "on",
       "remove_trailing_whitespace_on_save": true,
+      "language_servers": [
+        "biome",
+        "!vtsls",
+        "!typescript-language-server",
+        "!eslint",
+      ],
+      "formatter": {
+        "language_server": {
+          "name": "biome",
+        },
+      },
+      "code_actions_on_format": {
+        "source.fixAll.biome": true,
+        "source.organizeImports.biome": true,
+      },
     },
     "TSX": {
       "format_on_save": "on",
       "remove_trailing_whitespace_on_save": true,
+      "language_servers": [
+        "biome",
+        "!vtsls",
+        "!typescript-language-server",
+        "!eslint",
+      ],
+      "formatter": {
+        "language_server": {
+          "name": "biome",
+        },
+      },
+      "code_actions_on_format": {
+        "source.fixAll.biome": true,
+        "source.organizeImports.biome": true,
+      },
     },
     "Plain Text": {
       "format_on_save": "on",

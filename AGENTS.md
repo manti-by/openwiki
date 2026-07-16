@@ -1,6 +1,6 @@
 # OpenWiki - agent guide
 
-**This is an OpenCode plugin** (`openwiki`), not a standalone app.
+**This is an OpenCode plugin** (published to npm as `@manti-by/openwiki`), not a standalone app.
 Entry: `src/index.ts` exports `OpenWiki({client, directory})`.
 
 ## Commands
@@ -9,7 +9,8 @@ Entry: `src/index.ts` exports `OpenWiki({client, directory})`.
 |------|---------|
 | Install | `bun install` (or `make install`) |
 | Build | `bun run build` (compiles `src/` to `dist/` via `bun build`, external `@opencode-ai/plugin`) |
-| Lint | `bun run lint` (ESLint flat config, `eslint.config.js`) |
+| Lint | `bun run lint` (Biome check, `biome.json`) |
+| Format | `bun run format` (Biome auto-fix, `biome.json`) |
 | Typecheck | `bun run typecheck` (`tsc --noEmit`) |
 | Test | `bun test` (Bun's test runner; specs in `test/` use `node:test`/`node:assert` style) |
 | All checks | `make check` (lint -> typecheck -> test) |
@@ -28,4 +29,4 @@ CI (`.github/workflows/ci.yml`) runs `make install && make build && make check` 
 - **Consistency Agent** (`/wiki-consistency`) and **Dedup Agent** (`/wiki-dedup`) run inline as prompts in the current session — no child session.
 - **Frontmatter parsing** is a simple regex (`splitFrontmatter` in `src/lib/wiki.ts`) — no YAML library dependency.
 - **Model config.** Create `openwiki.json` in the project root with `"model": "providerID/modelID"` (e.g. `"anthropic/claude-sonnet-4-20250514"`) to set the Wiki Agent's model. Falls back to the first user message's model, then to the default from `opencode.json`.
-- **No formatter** beyond ESLint.
+- **Biome is the sole linter and formatter** (`biome.json`) — no ESLint, no Prettier.

@@ -1,4 +1,4 @@
-.PHONY: install build buildtypes lint typecheck test check prepublish publish publish_dryrun
+.PHONY: test
 
 install:
 	bun install
@@ -12,13 +12,19 @@ buildtypes:
 lint:
 	bun run lint
 
-typecheck:
+format:
+	bun run format
+
+check:
 	bun run typecheck
 
 test:
 	bun test
 
-check: lint typecheck test
+git-add:
+	git add .
+
+ci: git-add lint check test
 
 prepublish: check build buildtypes
 

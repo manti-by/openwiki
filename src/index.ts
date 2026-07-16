@@ -2,16 +2,17 @@ import { promises as fs } from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { tool } from "@opencode-ai/plugin"
+import { buildWikiAgentPrompt, parseAgentJson, transcriptFromMessages } from "./lib/summarize.js"
 import {
-  wikiRoot,
-  pagesRoot,
-  isInitialized,
   exists,
+  findExistingPageForSession,
+  isInitialized,
+  pageFilename,
+  pagesRoot,
   readIfExists,
   upsertIndexEntry,
-  findExistingPageForSession,
+  wikiRoot,
 } from "./lib/wiki.js"
-import { buildWikiAgentPrompt, transcriptFromMessages, parseAgentJson } from "./lib/summarize.js"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const PACKAGE_ROOT = path.dirname(__dirname)
@@ -103,14 +104,13 @@ interface OnSessionIdleInput {
 }
 
 async function onSessionIdle({ client, directory, sessionId }: OnSessionIdleInput): Promise<void> {
-  const messagesResp = await client.session.messages({ path: { id: sessionId } })
+  const messagesResp = await client.session.messages({
+    path: { id: sessionId },
+  })
   const messages = messagesResp?.data ?? messagesResp ?? []
   const transcript = transcriptFromMessages(messages)
   if (transcript.length < MIN_TRANSCRIPT_CHARS) return
 
-  // Skip wiki maintenance sessions — these modify the wiki but aren't project
-  // work worth a page of their own. The inline commands (/wiki-dedup,
-  // /wiki-consistency) will appear in the user messages of the transcript.
   const maintenancePatterns = [/\/wiki-dedup\b/, /\/wiki-consistency\b/]
   if (maintenancePatterns.some((p) => p.test(transcript))) return
 
@@ -121,10 +121,19 @@ async function onSessionIdle({ client, directory, sessionId }: OnSessionIdleInpu
   const existingPage = await findExistingPageForSession(directory, sessionId)
   const today = new Date().toISOString().slice(0, 10)
 
-  const prompt = buildWikiAgentPrompt({ readme, template, transcript, sessionId, today, existingPage })
+  const prompt = buildWikiAgentPrompt({
+    readme,
+    template,
+    transcript,
+    sessionId,
+    today,
+    existingPage,
+  })
   const model = await resolveModel(directory, client, messages)
 
-  const childSession = await client.session.create({ body: { title: `openwiki: ${sessionId}` } })
+  const childSession = await client.session.create({
+    body: { title: `openwiki: ${sessionId}` },
+  })
   const childId = childSession?.data?.id ?? childSession?.id
   const result = await client.session.prompt({
     path: { id: childId },
@@ -138,7 +147,7 @@ async function onSessionIdle({ client, directory, sessionId }: OnSessionIdleInpu
   const decision = parseAgentJson(replyText)
   if (decision.skip) return
 
-  const filename = existingPage ? existingPage.filename : (decision.filename as string)
+  const filename = existingPage ? existingPage.filename : pageFilename(today, (decision.title as string) ?? "untitled")
   const pagePath = path.join(pagesRoot(directory), filename)
   await fs.mkdir(pagesRoot(directory), { recursive: true })
   await fs.writeFile(pagePath, decision.content as string, "utf8")

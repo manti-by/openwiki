@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-OpenWiki is an **OpenCode plugin** (published to npm as `openwiki`) that maintains a local, per-project session wiki under `wiki/`. It is not a standalone app — `src/index.ts` exports a factory `OpenWiki({client, directory})` that OpenCode loads and calls with a host-provided client.
+OpenWiki is an **OpenCode plugin** (published to npm as `@manti-by/openwiki`) that maintains a local, per-project session wiki under `wiki/`. It is not a standalone app — `src/index.ts` exports a factory `OpenWiki({client, directory})` that OpenCode loads and calls with a host-provided client.
 
 ## Commands
 
@@ -14,7 +14,8 @@ OpenWiki is an **OpenCode plugin** (published to npm as `openwiki`) that maintai
 - `bun test` — run all tests (Bun's runner executes the `node:test`-style specs in `test/`)
 - `bun test test/wiki.test.ts` — run a single test file
 - `bun run typecheck` — `tsc --noEmit`
-- `bun run lint` — ESLint flat config (`eslint.config.js`)
+- `bun run lint` — Biome lint + format check (`biome check .`, config in `biome.json`)
+- `bun run format` — Biome auto-fix (`biome check --write .`)
 - `npm run check` / `make check` — lint -> typecheck -> test (the CI gate)
 - `make publish_dryrun` — check + build + `npm publish --dry-run`
 - `make publish` — check + build + `npm publish`
@@ -29,7 +30,7 @@ Three-file source tree, all in `src/`:
 
 - **`src/index.ts`** — the plugin entry point. Registers two tools (`openwiki_init`, `openwiki_write`) and one event handler (`session.idle`). This is the only file that talks to the OpenCode host (`client.session.*`, `client.config.get`).
 - **`src/lib/wiki.ts`** — pure filesystem/string helpers: path resolution (`wikiRoot`, `pagesRoot`), frontmatter parsing (a hand-rolled regex, no YAML dependency — see `splitFrontmatter`), slugify/filename generation, and `upsertIndexEntry` (keeps `wiki/INDEX.md`'s `## Pages` section deduplicated and newest-first).
-- **`src/lib/summarize.ts`** — pure prompt-building and response-parsing: `buildWikiAgentPrompt` builds the prompt sent to the child session, `transcriptFromMessages` flattens OpenCode message objects into a role-tagged transcript, `parseAgentJson` tolerantly extracts a JSON object from a subagent reply (handles markdown fences and stray prose).
+- **`src/lib/summarize.ts`** — pure prompt-building and response-parsing: `buildWikiAgentPrompt` renders the prompt sent to the child session from `wiki-agent-prompt.txt` (a `{{token}}` template loaded via Bun's `type: "text"` import and inlined at build time — no runtime file I/O), `transcriptFromMessages` flattens OpenCode message objects into a role-tagged transcript, `parseAgentJson` tolerantly extracts a JSON object from a subagent reply (handles markdown fences and stray prose).
 
 `wiki.ts` and `summarize.ts` have no dependency on `@opencode-ai/plugin` and are directly unit-testable; `index.ts` is the thin, host-coupled glue layer.
 
@@ -56,4 +57,4 @@ Four command definitions, installed into `.opencode/commands/` by `openwiki_init
 - **ESM + TypeScript, no runtime deps.** `@opencode-ai/plugin` (the `tool` helper) is a devDependency, injected by the OpenCode host at runtime — it is not listed under `dependencies`.
 - **Wiki is opt-in per project.** Nothing happens until `/wiki-init` runs; it is idempotent and never overwrites existing files.
 - **Model config** lives in a project's `openwiki.json` (`{"model": "providerID/modelID"}`), read fresh on every `session.idle` — see `resolveModel` in `src/index.ts`.
-- **No formatter** beyond ESLint; don't introduce Prettier.
+- **Biome is the sole linter and formatter** (`biome.json`) — covers both linting and formatting in one tool; don't introduce ESLint or Prettier alongside it.

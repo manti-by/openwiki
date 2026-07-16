@@ -9,7 +9,7 @@ services: [core]
 branch: -
 tickets: []
 tags: [exploration, architecture, plugin-system, onboarding]
-related: [2026-07-13-comprehensive-project-exploration.md, 2026-07-13-project-audit.md]
+related: [2026-07-13-comprehensive-project-exploration.md, 2026-07-13-project-audit.md, 2026-07-15-openwiki-plugin-design-spec.md]
 ---
 
 # Systematic OpenWiki Codebase Exploration and Architecture Analysis
@@ -93,5 +93,5 @@ Source-of-truth command definitions live in `commands/wiki-{init,write,consisten
 
 ## References
 
-- Related: [[2026-07-13-comprehensive-project-exploration.md]], [[2026-07-13-project-audit.md]]
+- Related: [[2026-07-13-comprehensive-project-exploration.md]], [[2026-07-13-project-audit.md]], [[2026-07-15-openwiki-plugin-design-spec.md]]
 - External: https://opencode.ai — OpenCode plugin API

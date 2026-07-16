@@ -7,6 +7,9 @@ by the plugin.
 
 ## Pages
 
+- [First npm Publish — Name Collision, Version, and Auth Fixes](pages/2026-07-16-npm-first-publish-fixes.md) — Fixed npm name collision, invalid semver version, dead workflow dispatch input, local provenance error, and GitHub Actions ENEEDAUTH; merged/revalidated project docs (2026-07-16)
+- [Security Review and Biome Migration](pages/2026-07-16-security-review-and-biome-migration.md) — Found and fixed a path-traversal bug, a dead dependency, and a stale package name; migrated linting/formatting from ESLint to Biome (2026-07-16)
+- [OpenWiki Plugin Design Spec](pages/2026-07-15-openwiki-plugin-design-spec.md) — Canonical design spec for the plugin (wiki layout, Wiki/Consistency/Dedup Agents, config, tech stack), converted from the repo-root DOCS.md (2026-07-15)
 - [First /wiki-dedup Command Run — Audit Pair Merged](pages/2026-07-14-first-dedup-command-run.md) — Exercised the dedup command against the live wiki; merged the audit pair, confirmed architecture triplicate was already handled, deleted 3 files (2026-07-14)
 - [Wiki Deduplication Command](pages/2026-07-14-wiki-dedup-command.md) — Created /wiki-dedup command to find and merge near-duplicate wiki pages; also repaired INDEX.md with missing entries and topic clusters (2026-07-14)
 - [JavaScript-to-TypeScript Migration with Bun](pages/2026-07-14-js-to-typescript-migration.md) — Migrated project from JS to TypeScript, switched to bun, updated toolchain (2026-07-14)

@@ -1,4 +1,9 @@
 import type { ExistingPage } from "./wiki.js"
+import promptTemplate from "./wiki-agent.txt" with { type: "text" }
+
+function renderTemplate(template: string, vars: Record<string, string>): string {
+  return template.replace(/\{\{(\w+)\}\}/g, (_, key) => vars[key] ?? "")
+}
 
 export interface WikiAgentInput {
   readme: string
@@ -9,7 +14,14 @@ export interface WikiAgentInput {
   existingPage: ExistingPage | null
 }
 
-export function buildWikiAgentPrompt({ readme, template, transcript, sessionId, today, existingPage }: WikiAgentInput): string {
+export function buildWikiAgentPrompt({
+  readme,
+  template,
+  transcript,
+  sessionId,
+  today,
+  existingPage,
+}: WikiAgentInput): string {
   const existingBlock = existingPage
     ? `This session already has a wiki page from an earlier point in the same
 conversation. UPDATE it in place — reuse the exact same filename, and revise
@@ -25,50 +37,18 @@ ${existingPage.content}
     ? `"filename": "${existingPage.filename}"`
     : `"filename": "${today}-<kebab-case-topic>.md"`
 
-  return `You are the OpenWiki Wiki Agent. You maintain a per-project session wiki.
+  const indexFilename = existingPage ? existingPage.filename : `${today}-<kebab-case-topic>.md`
 
-Read these wiki conventions carefully:
-
---- wiki/README.md ---
-${readme}
-
---- wiki/TEMPLATE.md ---
-${template}
-
-Below is the transcript of a coding session (session id: ${sessionId}).
-Today's date is ${today}.
-
-${existingBlock}
-
-Decide whether this session is worth a wiki page. Skip trivial sessions: quick
-one-off questions, small talk, sessions with no real investigation, debugging,
-review, or implementation work. Only write a page when the session matches one
-of the page types in TEMPLATE.md: debug, investigation, code-review, implementation.
-
-Also skip sessions whose transcript is primarily about maintaining the wiki
-itself — deduplicating pages, running consistency checks, repairing the index,
-or other wiki bookkeeping. These sessions modify the wiki but are not project
-work worth a page of their own.
-
-Reply with ONLY a single JSON object, no markdown fences, no prose outside it:
-
-{
-  "skip": true
-}
-
-or, if the session earns a page:
-
-{
-  "skip": false,
-  "title": "<human-readable title>",
-  ${filenameLine},
-  "content": "<full page content, frontmatter + body, following TEMPLATE.md exactly, with session_id set to ${sessionId}>",
-  "indexLine": "- [<title>](pages/${existingPage ? existingPage.filename : `${today}-<kebab-case-topic>.md`}) — <one-line summary> (${today})"
-}
-
---- session transcript ---
-${transcript}
-`
+  return renderTemplate(promptTemplate, {
+    readme,
+    template,
+    sessionId,
+    today,
+    existingBlock,
+    filenameLine,
+    indexFilename,
+    transcript,
+  })
 }
 
 export function transcriptFromMessages(messages: any[]): string {

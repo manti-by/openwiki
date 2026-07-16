@@ -9,7 +9,7 @@ An [OpenCode](https://opencode.ai) plugin that maintains a local, per-project se
   contradictions, resolves what it can against the current codebase, and files anything it
   can't resolve as a question in `wiki/QUESTIONS.md` for a human to answer.
 
-See [DOCS.md](DOCS.md) for the full design spec.
+See [wiki/pages/2026-07-15-openwiki-plugin-design-spec.md](wiki/pages/2026-07-15-openwiki-plugin-design-spec.md) for the full design spec.
 
 ## Install
 
@@ -17,7 +17,7 @@ Add the package to your project's `opencode.json`:
 
 ```json
 {
-  "plugin": ["openwiki"]
+  "plugin": ["@manti-by/openwiki"]
 }
 ```
 
@@ -122,5 +122,6 @@ bun install              # install dependencies
 bun run build            # compile src/ to dist/
 bun test                 # run tests
 bun run typecheck        # type-check without emitting
-bun run lint             # lint with ESLint
+bun run lint             # lint & format-check with Biome
+bun run format           # auto-fix with Biome
 ```
