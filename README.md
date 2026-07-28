@@ -26,18 +26,24 @@ Add the package to your project's `opencode.json`:
 
 ## Usage
 
-1. Run `/wiki-init` once per project. This scaffolds `wiki/` (`README.md`, `TEMPLATE.md`,
-   `INDEX.md`, `QUESTIONS.md`, `pages/`) from the bundled templates, and installs the
-   `/wiki-init`, `/wiki-write`, and `/wiki-consistency` commands into `.opencode/commands/`. Nothing happens
-   automatically before this — the plugin does no scaffolding on its own.
-2. Work normally. After each session goes idle, the Wiki Agent decides whether it earned a
+1. Add the plugin to your project's `opencode.json` (see [Install](#install) above) and
+   restart OpenCode. On first load the plugin writes the four `/wiki-*` slash commands
+   (`/wiki-init`, `/wiki-write`, `/wiki-consistency`, `/wiki-dedup`) into
+   `.opencode/commands/` — nothing else is created yet.
+2. Run `/wiki-init` once per project. This scaffolds `wiki/` (`README.md`, `TEMPLATE.md`,
+   `INDEX.md`, `QUESTIONS.md`, `pages/`) from the bundled templates with `<PROJECT_NAME>`
+   substituted to the project name (or the directory name if you don't pass one). After
+   this the Wiki Agent starts working on every `session.idle`.
+3. Work normally. After each session goes idle, the Wiki Agent decides whether it earned a
    page (skipping quick Q&A and small talk) and, if so, writes or updates
    `wiki/pages/YYYY-MM-DD-topic.md` and keeps `wiki/INDEX.md` current.
-3. Run `/wiki-write` at any time to force the Wiki Agent to evaluate the current session
+4. Run `/wiki-write` at any time to force the Wiki Agent to evaluate the current session
    immediately (useful if you want to capture a session before it goes idle).
-4. Run `/wiki-consistency` periodically (or whenever something looks stale) to cluster
+5. Run `/wiki-consistency` periodically (or whenever something looks stale) to cluster
    pages by topic, cross-check them, resolve discrepancies, rebuild the "By topic" section
    of the index, and file open questions.
+6. Run `/wiki-dedup` to find near-duplicate pages (~85–90% similar) and merge them,
+   keeping the most recent version.
 
 ## Running the consistency check
 
@@ -91,7 +97,7 @@ If the file is absent or has no `model` property, the Wiki Agent uses the same m
 ```
 src/            TypeScript plugin source (compiled to dist/ by bun build)
 templates/      wiki/ scaffold: README.md, TEMPLATE.md, INDEX.md, QUESTIONS.md
-commands/       /wiki-init, /wiki-write, and /wiki-consistency command definitions
+commands/       /wiki-init, /wiki-write, /wiki-consistency, /wiki-dedup command definitions
 dist/           Compiled plugin output (generated, not committed)
 ```
 

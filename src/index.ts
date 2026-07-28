@@ -45,11 +45,18 @@ interface OpenCodeEvent {
 }
 
 export const OpenWiki = async ({ client, directory }: { client: OpenCodeClient; directory: string }) => {
+  // Self-bootstrap: ensure the four /wiki-* slash commands exist in the
+  // project's .opencode/commands/ before OpenCode finishes its startup
+  // command scan. Plugins cannot register slash commands through the SDK,
+  // and commands are discovered from disk, so the files must be written
+  // here. Idempotent — never overwrites a file the user has customised.
+  await installCommandsIfMissing(directory)
+
   return {
     tool: {
       openwiki_init: tool({
         description:
-          "Scaffold the wiki/ directory for this project from the OpenWiki templates (README, TEMPLATE, INDEX, QUESTIONS) and install the /wiki-init, /wiki-write, /wiki-consistency, and /wiki-dedup slash commands into .opencode/commands/. Safe to call more than once — never overwrites existing files.",
+          "Scaffold the wiki/ directory for this project from the OpenWiki templates (README, TEMPLATE, INDEX, QUESTIONS). The four /wiki-* slash commands are auto-installed on plugin load, so re-running this tool is a near-no-op once the plugin is active. Safe to call more than once — never overwrites existing files.",
         args: {
           projectName: tool.schema.string().optional(),
         },
@@ -91,6 +98,25 @@ export const OpenWiki = async ({ client, directory }: { client: OpenCodeClient; 
   }
 }
 
+async function installCommandsIfMissing(directory: string): Promise<{ installed: number; skipped: number }> {
+  const commandsDest = path.join(directory, ".opencode", "commands")
+  await fs.mkdir(commandsDest, { recursive: true })
+  let installed = 0
+  let skipped = 0
+  for (const file of await fs.readdir(COMMANDS_DIR)) {
+    if (!file.endsWith(".md")) continue
+    const dest = path.join(commandsDest, file)
+    if (await exists(dest)) {
+      skipped++
+      continue
+    }
+    const src = await fs.readFile(path.join(COMMANDS_DIR, file), "utf8")
+    await fs.writeFile(dest, src, "utf8")
+    installed++
+  }
+  return { installed, skipped }
+}
+
 async function initWiki(directory: string, projectName?: string): Promise<string> {
   const root = wikiRoot(directory)
   const pages = pagesRoot(directory)
@@ -106,26 +132,11 @@ async function initWiki(directory: string, projectName?: string): Promise<string
     filesWritten++
   }
 
-  const commandsDest = path.join(directory, ".opencode", "commands")
-  await fs.mkdir(commandsDest, { recursive: true })
-  let commandsInstalled = 0
-  let commandsSkipped = 0
-  for (const file of await fs.readdir(COMMANDS_DIR)) {
-    if (!file.endsWith(".md")) continue
-    const dest = path.join(commandsDest, file)
-    if (await exists(dest)) {
-      commandsSkipped++
-      continue
-    }
-    const src = await fs.readFile(path.join(COMMANDS_DIR, file), "utf8")
-    await fs.writeFile(dest, src, "utf8")
-    commandsInstalled++
-  }
+  const { installed, skipped } = await installCommandsIfMissing(directory)
 
   return (
     `OpenWiki initialized for "${name}": ${filesWritten} wiki file(s) written to wiki/, ` +
-    `${commandsInstalled} command(s) installed in .opencode/commands/ ` +
-    `(${commandsSkipped} already present, left untouched).`
+    `${installed} command(s) installed in .opencode/commands/ (${skipped} already present, left untouched).`
   )
 }
 

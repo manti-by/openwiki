@@ -108,8 +108,9 @@ test("event handler ignores non-idle events", async () => {
   assert.equal(calls.create.length, 0)
 })
 
-test("openwiki_init scaffolds wiki/ files and installs every command into .opencode/commands/", async () => {
+test("openwiki_init scaffolds wiki/ files and re-runs idempotently for commands", async () => {
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), "openwiki-init-"))
+  // Empty project — bootstrap on plugin load will install all 4 commands.
   const { client } = makeClient()
   const plugin = await OpenWiki({ client: client as never, directory: dir })
 
@@ -136,20 +137,34 @@ test("openwiki_init scaffolds wiki/ files and installs every command into .openc
   const installed = await fs.readdir(path.join(dir, ".opencode", "commands"))
   assert.deepEqual(installed.sort(), ["wiki-consistency.md", "wiki-dedup.md", "wiki-init.md", "wiki-write.md"])
   assert.match(result, /initialized for "TestProj"/)
-  assert.match(result, /4 command\(s\) installed/)
+  // Commands were already installed by the bootstrap on plugin load —
+  // openwiki_init is a no-op for them and just reports 4 already present.
+  assert.match(result, /0 command\(s\) installed/)
+  assert.match(result, /4 already present/)
 })
 
 test("openwiki_init is idempotent — does not overwrite existing wiki files or commands", async () => {
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), "openwiki-init-"))
-  const { client } = makeClient()
-  const plugin = await OpenWiki({ client: client as never, directory: dir })
 
-  // Pre-seed: a user-customised README and a custom command.
+  // Pre-seed BEFORE loading the plugin: a user-customised README and a
+  // custom command. The bootstrap on plugin load must leave the command
+  // alone; initWiki must then leave the README alone.
   await fs.mkdir(path.join(dir, ".opencode", "commands"), { recursive: true })
   await fs.mkdir(path.join(dir, "wiki"), { recursive: true })
   await fs.writeFile(path.join(dir, "wiki", "README.md"), "CUSTOM README", "utf8")
   await fs.writeFile(path.join(dir, ".opencode", "commands", "wiki-init.md"), "CUSTOM COMMAND", "utf8")
 
+  const { client } = makeClient()
+  const plugin = await OpenWiki({ client: client as never, directory: dir })
+
+  // Bootstrap on load should have left the customised command alone, and
+  // installed the other three.
+  assert.equal(await fs.readFile(path.join(dir, ".opencode", "commands", "wiki-init.md"), "utf8"), "CUSTOM COMMAND")
+  let installed = await fs.readdir(path.join(dir, ".opencode", "commands"))
+  assert.deepEqual(installed.sort(), ["wiki-consistency.md", "wiki-dedup.md", "wiki-init.md", "wiki-write.md"])
+
+  // Now run openwiki_init — wiki/ is already there, commands are already
+  // there, so everything should be a no-op (0 written, 4 already present).
   const result = await plugin.tool.openwiki_init.execute({}, {
     sessionID: "s",
     messageID: "m",
@@ -163,11 +178,52 @@ test("openwiki_init is idempotent — does not overwrite existing wiki files or 
 
   assert.equal(await fs.readFile(path.join(dir, "wiki", "README.md"), "utf8"), "CUSTOM README")
   assert.equal(await fs.readFile(path.join(dir, ".opencode", "commands", "wiki-init.md"), "utf8"), "CUSTOM COMMAND")
-
-  // The other three commands should still have been installed.
-  const installed = await fs.readdir(path.join(dir, ".opencode", "commands"))
+  installed = await fs.readdir(path.join(dir, ".opencode", "commands"))
   assert.deepEqual(installed.sort(), ["wiki-consistency.md", "wiki-dedup.md", "wiki-init.md", "wiki-write.md"])
 
-  assert.match(result, /3 command\(s\) installed/)
-  assert.match(result, /1 already present/)
+  assert.match(result, /3 wiki file\(s\) written/)
+  assert.match(result, /0 command\(s\) installed/)
+  assert.match(result, /4 already present/)
+})
+
+test("loading the plugin auto-installs the four /wiki-* commands into .opencode/commands/", async () => {
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "openwiki-bootstrap-"))
+  const { client } = makeClient()
+
+  await OpenWiki({ client: client as never, directory: dir })
+
+  const installed = await fs.readdir(path.join(dir, ".opencode", "commands"))
+  assert.deepEqual(installed.sort(), ["wiki-consistency.md", "wiki-dedup.md", "wiki-init.md", "wiki-write.md"])
+})
+
+test("plugin bootstrap does not overwrite a user-customised command", async () => {
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "openwiki-bootstrap-"))
+  await fs.mkdir(path.join(dir, ".opencode", "commands"), { recursive: true })
+  await fs.writeFile(path.join(dir, ".opencode", "commands", "wiki-init.md"), "CUSTOM INIT", "utf8")
+
+  const { client } = makeClient()
+  await OpenWiki({ client: client as never, directory: dir })
+
+  assert.equal(await fs.readFile(path.join(dir, ".opencode", "commands", "wiki-init.md"), "utf8"), "CUSTOM INIT")
+  const installed = await fs.readdir(path.join(dir, ".opencode", "commands"))
+  assert.deepEqual(installed.sort(), ["wiki-consistency.md", "wiki-dedup.md", "wiki-init.md", "wiki-write.md"])
+})
+
+test("plugin bootstrap is a no-op when all commands are already present", async () => {
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "openwiki-bootstrap-"))
+  await fs.mkdir(path.join(dir, ".opencode", "commands"), { recursive: true })
+  for (const file of ["wiki-consistency.md", "wiki-dedup.md", "wiki-init.md", "wiki-write.md"]) {
+    await fs.writeFile(path.join(dir, ".opencode", "commands", file), `SEED ${file}`, "utf8")
+  }
+
+  const { client } = makeClient()
+  await OpenWiki({ client: client as never, directory: dir })
+
+  for (const file of ["wiki-consistency.md", "wiki-dedup.md", "wiki-init.md", "wiki-write.md"]) {
+    assert.equal(
+      await fs.readFile(path.join(dir, ".opencode", "commands", file), "utf8"),
+      `SEED ${file}`,
+      `${file} should be untouched on a re-load`,
+    )
+  }
 })

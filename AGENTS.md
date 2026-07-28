@@ -13,7 +13,7 @@ Entry: `src/index.ts` exports `OpenWiki({client, directory})`.
 | Format | `bun run format` (Biome auto-fix, `biome.json`) |
 | Typecheck | `bun run typecheck` (`tsc --noEmit`) |
 | Test | `bun test` (Bun's test runner; specs in `test/` use `node:test`/`node:assert` style) |
-| All checks | `make check` (lint -> typecheck -> test) |
+| All checks | `bun run lint && bun run typecheck && bun test` (the `Makefile` `check` target is just `typecheck`; this is a known inconsistency, run all three manually before shipping) |
 | Dry-run publish | `make publish_dryrun` (check + build + `npm publish --dry-run`) |
 | Publish | `make publish` (check + build + `npm publish`) |
 | CI publish | Publish a GitHub release — `.github/workflows/publish.yml` handles provenance |
@@ -24,7 +24,7 @@ CI (`.github/workflows/ci.yml`) runs `make install && make build && make check` 
 
 - **No runtime deps.** `@opencode-ai/plugin` (`tool`) is a devDependency, injected by the OpenCode host at runtime — not listed under `dependencies`. Code that imports it cannot be tested directly outside the host.
 - **TypeScript + ESM**, built and tested with Bun (no Node/npm required for development). `src/index.ts` is the only file coupled to the host; `src/lib/wiki.ts` and `src/lib/summarize.ts` are pure and directly unit-testable.
-- **Wiki is opt-in.** The plugin does nothing until `/wiki-init` is run (scaffolds `wiki/`, installs commands into `.opencode/commands/`). Idempotent — never overwrites existing files.
+- **Wiki is opt-in but commands self-install.** The plugin's `OpenWiki` factory runs `installCommandsIfMissing` on load, copying `commands/*.md` into `<project>/.opencode/commands/` (skipping any that already exist). This makes `/wiki-init`, `/wiki-write`, `/wiki-consistency`, and `/wiki-dedup` available the first time the user restarts OpenCode after adding the plugin to `opencode.json`. The `wiki/` scaffold itself is still gated behind an explicit `/wiki-init` (or a call to the `openwiki_init` tool), so nothing else is written without the user asking.
 - **Wiki Agent** runs on `session.idle` (skips if wiki not initialized or transcript < 80 chars, or if the transcript is wiki-maintenance-only). Spawns a child session via `client.session.create` + `client.session.prompt`, expects pure JSON reply (`{skip:true}` or page content). Can also be force-invoked via the `openwiki_write` tool (`/wiki-write`).
 - **Consistency Agent** (`/wiki-consistency`) and **Dedup Agent** (`/wiki-dedup`) run inline as prompts in the current session — no child session.
 - **Frontmatter parsing** is a simple regex (`splitFrontmatter` in `src/lib/wiki.ts`) — no YAML library dependency.
