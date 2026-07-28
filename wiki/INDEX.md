@@ -7,6 +7,7 @@ by the plugin.
 
 ## Pages
 
+- [Self-Installing Slash Commands on Plugin Load](pages/2026-07-28-slash-command-self-bootstrap.md) — Plugin now auto-installs four /wiki-* commands on load via `installCommandsIfMissing`, solving the chicken-and-egg bootstrap problem; shared helper extracted; docs updated; bumped to rc4 (2026-07-28)
 - [Fix Warp Notification Flicker from the Background Writer Session](pages/2026-07-28-warp-notification-flicker-fix.md) — Writer session now created with a parentID so Warp's opencode plugin suppresses its lifecycle notifications; idle handler skips background/child sessions (2026-07-28)
 - [Writer Session Reuse for Wiki Agent](pages/2026-07-22-writer-session-reuse.md) — Cached child writer session ID in a dotfile to avoid creating a new session on every idle/wiki-write call (2026-07-22)
 - [First npm Publish — Name Collision, Version, and Auth Fixes](pages/2026-07-16-npm-first-publish-fixes.md) — Fixed npm name collision, invalid semver version, dead workflow dispatch input, local provenance error, and GitHub Actions ENEEDAUTH; merged/revalidated project docs (2026-07-16)

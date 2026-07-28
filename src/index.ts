@@ -297,3 +297,5 @@ async function resolveModel(directory: string, client: OpenCodeClient, messages:
 
   return null
 }
+
+export default OpenWiki

@@ -4,7 +4,7 @@ import os from "node:os"
 import path from "node:path"
 import { test } from "node:test"
 
-import { OpenWiki } from "../src/index.js"
+import OpenWikiDefault, { OpenWiki } from "../src/index.js"
 import { writerSessionPath } from "../src/lib/wiki.js"
 
 async function scaffoldWiki(): Promise<string> {
@@ -226,4 +226,9 @@ test("plugin bootstrap is a no-op when all commands are already present", async 
       `${file} should be untouched on a re-load`,
     )
   }
+})
+
+test("OpenWiki is exported as the module's default export so OpenCode's plugin loader can call it", () => {
+  assert.equal(typeof OpenWikiDefault, "function", "default export must be the factory function")
+  assert.equal(OpenWikiDefault, OpenWiki, "default export must be the same function as the named export")
 })
