@@ -4,6 +4,8 @@ import path from "node:path"
 export const WIKI_DIRNAME = "wiki"
 export const PAGES_DIRNAME = "pages"
 
+const WRITER_SESSION_FILENAME = ".openwiki-writer-session"
+
 export function wikiRoot(projectDir: string): string {
   return path.join(projectDir, WIKI_DIRNAME)
 }
@@ -104,4 +106,20 @@ export async function findExistingPageForSession(projectDir: string, sessionId: 
     if (frontmatter.session_id === sessionId) return { filename: name, content }
   }
   return null
+}
+
+export function writerSessionPath(projectDir: string): string {
+  return path.join(wikiRoot(projectDir), WRITER_SESSION_FILENAME)
+}
+
+export async function loadWriterSession(projectDir: string): Promise<string | null> {
+  try {
+    return (await fs.readFile(writerSessionPath(projectDir), "utf8")).trim()
+  } catch {
+    return null
+  }
+}
+
+export async function saveWriterSession(projectDir: string, sessionId: string): Promise<void> {
+  await fs.writeFile(writerSessionPath(projectDir), sessionId, "utf8")
 }

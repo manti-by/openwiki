@@ -7,6 +7,8 @@ by the plugin.
 
 ## Pages
 
+- [Fix Warp Notification Flicker from the Background Writer Session](pages/2026-07-28-warp-notification-flicker-fix.md) — Writer session now created with a parentID so Warp's opencode plugin suppresses its lifecycle notifications; idle handler skips background/child sessions (2026-07-28)
+- [Writer Session Reuse for Wiki Agent](pages/2026-07-22-writer-session-reuse.md) — Cached child writer session ID in a dotfile to avoid creating a new session on every idle/wiki-write call (2026-07-22)
 - [First npm Publish — Name Collision, Version, and Auth Fixes](pages/2026-07-16-npm-first-publish-fixes.md) — Fixed npm name collision, invalid semver version, dead workflow dispatch input, local provenance error, and GitHub Actions ENEEDAUTH; merged/revalidated project docs (2026-07-16)
 - [Security Review and Biome Migration](pages/2026-07-16-security-review-and-biome-migration.md) — Found and fixed a path-traversal bug, a dead dependency, and a stale package name; migrated linting/formatting from ESLint to Biome (2026-07-16)
 - [OpenWiki Plugin Design Spec](pages/2026-07-15-openwiki-plugin-design-spec.md) — Canonical design spec for the plugin (wiki layout, Wiki/Consistency/Dedup Agents, config, tech stack), converted from the repo-root DOCS.md (2026-07-15)

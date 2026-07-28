@@ -7,9 +7,11 @@ import {
   exists,
   findExistingPageForSession,
   isInitialized,
+  loadWriterSession,
   pageFilename,
   pagesRoot,
   readIfExists,
+  saveWriterSession,
   upsertIndexEntry,
   wikiRoot,
 } from "./lib/wiki.js"
@@ -19,11 +21,13 @@ const PACKAGE_ROOT = path.dirname(__dirname)
 const TEMPLATES_DIR = path.join(PACKAGE_ROOT, "templates")
 
 const MIN_TRANSCRIPT_CHARS = 80
+const processedSessions = new Set<string>()
 
 interface OpenCodeClient {
   session: {
     messages: (args: { path: { id: string } }) => Promise<any>
-    create: (args: { body: { title: string } }) => Promise<any>
+    get?: (args: { path: { id: string } }) => Promise<any>
+    create: (args: { body: { title: string; parentID?: string } }) => Promise<any>
     prompt: (args: { path: { id: string }; body: { model?: any; parts: any[] } }) => Promise<any>
   }
   config: {
@@ -69,6 +73,13 @@ export const OpenWiki = async ({ client, directory }: { client: OpenCodeClient; 
       const sessionId = event.properties?.sessionID ?? event.properties?.sessionId
       if (!sessionId) return
       if (!(await isInitialized(directory))) return
+      if (processedSessions.has(sessionId)) return
+      // Never document our own background writer session, nor any child/subagent
+      // session. Doing so would spawn a prompt on every writer idle event —
+      // wasteful churn, a bogus self-referential page, and extra host events
+      // that break notification plugins keyed off session lifecycle.
+      if (await isBackgroundSession(client, directory, sessionId)) return
+      processedSessions.add(sessionId)
 
       try {
         await onSessionIdle({ client, directory, sessionId })
@@ -131,10 +142,7 @@ async function onSessionIdle({ client, directory, sessionId }: OnSessionIdleInpu
   })
   const model = await resolveModel(directory, client, messages)
 
-  const childSession = await client.session.create({
-    body: { title: `openwiki: ${sessionId}` },
-  })
-  const childId = childSession?.data?.id ?? childSession?.id
+  const childId = await getOrCreateWriterSession(client, directory, sessionId)
   const result = await client.session.prompt({
     path: { id: childId },
     body: {
@@ -155,6 +163,49 @@ async function onSessionIdle({ client, directory, sessionId }: OnSessionIdleInpu
   const indexPath = path.join(wikiRoot(directory), "INDEX.md")
   const index = (await readIfExists(indexPath)) ?? ""
   await fs.writeFile(indexPath, upsertIndexEntry(index, filename, decision.indexLine as string), "utf8")
+}
+
+async function getOrCreateWriterSession(
+  client: OpenCodeClient,
+  directory: string,
+  parentSessionId: string,
+): Promise<string> {
+  const cached = await loadWriterSession(directory)
+  if (cached) {
+    try {
+      await client.session.messages({ path: { id: cached } })
+      return cached
+    } catch {
+      // cached session is dead — create a new one
+    }
+  }
+
+  // Create the writer as a CHILD of the triggering session (parentID set).
+  // OpenCode marks such sessions as subagents, and notification plugins (e.g.
+  // the Warp plugin) suppress their lifecycle notifications — without this the
+  // background writer's session.created/idle/tool events flicker as if they
+  // were a foreground user session.
+  const childSession = await client.session.create({
+    body: { title: "openwiki writer", parentID: parentSessionId },
+  })
+  const childId = childSession?.data?.id ?? childSession?.id
+  await saveWriterSession(directory, childId)
+  return childId
+}
+
+// True if the session is OpenWiki's own writer session, or any child/subagent
+// session (has a parentID). Such sessions must never be documented.
+async function isBackgroundSession(client: OpenCodeClient, directory: string, sessionId: string): Promise<boolean> {
+  const cachedWriter = await loadWriterSession(directory)
+  if (cachedWriter && cachedWriter === sessionId) return true
+  try {
+    const resp = await client.session.get?.({ path: { id: sessionId } })
+    const info = resp?.data ?? resp
+    if (info?.parentID) return true
+  } catch {
+    // couldn't resolve — treat as a normal session
+  }
+  return false
 }
 
 function extractReplyText(result: any): string {
