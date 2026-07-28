@@ -107,3 +107,67 @@ test("event handler ignores non-idle events", async () => {
   assert.equal(calls.messages.length, 0)
   assert.equal(calls.create.length, 0)
 })
+
+test("openwiki_init scaffolds wiki/ files and installs every command into .opencode/commands/", async () => {
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "openwiki-init-"))
+  const { client } = makeClient()
+  const plugin = await OpenWiki({ client: client as never, directory: dir })
+
+  const result = await plugin.tool.openwiki_init.execute({ projectName: "TestProj" }, {
+    sessionID: "s",
+    messageID: "m",
+    agent: "build",
+    directory: dir,
+    worktree: dir,
+    abort: new AbortController().signal,
+    metadata: () => {},
+    ask: async () => {},
+  } as never)
+
+  for (const file of ["README.md", "TEMPLATE.md", "INDEX.md", "QUESTIONS.md"]) {
+    const content = await fs.readFile(path.join(dir, "wiki", file), "utf8")
+    assert.ok(content.length > 0, `${file} should be non-empty`)
+  }
+  for (const file of ["README.md", "INDEX.md", "QUESTIONS.md"]) {
+    const content = await fs.readFile(path.join(dir, "wiki", file), "utf8")
+    assert.ok(content.includes("TestProj"), `${file} should have project name substituted`)
+  }
+
+  const installed = await fs.readdir(path.join(dir, ".opencode", "commands"))
+  assert.deepEqual(installed.sort(), ["wiki-consistency.md", "wiki-dedup.md", "wiki-init.md", "wiki-write.md"])
+  assert.match(result, /initialized for "TestProj"/)
+  assert.match(result, /4 command\(s\) installed/)
+})
+
+test("openwiki_init is idempotent — does not overwrite existing wiki files or commands", async () => {
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), "openwiki-init-"))
+  const { client } = makeClient()
+  const plugin = await OpenWiki({ client: client as never, directory: dir })
+
+  // Pre-seed: a user-customised README and a custom command.
+  await fs.mkdir(path.join(dir, ".opencode", "commands"), { recursive: true })
+  await fs.mkdir(path.join(dir, "wiki"), { recursive: true })
+  await fs.writeFile(path.join(dir, "wiki", "README.md"), "CUSTOM README", "utf8")
+  await fs.writeFile(path.join(dir, ".opencode", "commands", "wiki-init.md"), "CUSTOM COMMAND", "utf8")
+
+  const result = await plugin.tool.openwiki_init.execute({}, {
+    sessionID: "s",
+    messageID: "m",
+    agent: "build",
+    directory: dir,
+    worktree: dir,
+    abort: new AbortController().signal,
+    metadata: () => {},
+    ask: async () => {},
+  } as never)
+
+  assert.equal(await fs.readFile(path.join(dir, "wiki", "README.md"), "utf8"), "CUSTOM README")
+  assert.equal(await fs.readFile(path.join(dir, ".opencode", "commands", "wiki-init.md"), "utf8"), "CUSTOM COMMAND")
+
+  // The other three commands should still have been installed.
+  const installed = await fs.readdir(path.join(dir, ".opencode", "commands"))
+  assert.deepEqual(installed.sort(), ["wiki-consistency.md", "wiki-dedup.md", "wiki-init.md", "wiki-write.md"])
+
+  assert.match(result, /3 command\(s\) installed/)
+  assert.match(result, /1 already present/)
+})

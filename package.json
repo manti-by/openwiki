@@ -1,6 +1,6 @@
 {
   "name": "@manti-by/openwiki",
-  "version": "0.3.0-rc2",
+  "version": "0.3.0-rc3",
   "description": "OpenCode plugin that maintains a local, per-project session wiki: a Wiki Agent summarizes noteworthy sessions into wiki/, and a Consistency Agent keeps the index and pages honest over time.",
   "type": "module",
   "main": "dist/index.js",

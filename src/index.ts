@@ -19,6 +19,7 @@ import {
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const PACKAGE_ROOT = path.dirname(__dirname)
 const TEMPLATES_DIR = path.join(PACKAGE_ROOT, "templates")
+const COMMANDS_DIR = path.join(PACKAGE_ROOT, "commands")
 
 const MIN_TRANSCRIPT_CHARS = 80
 const processedSessions = new Set<string>()
@@ -48,7 +49,7 @@ export const OpenWiki = async ({ client, directory }: { client: OpenCodeClient; 
     tool: {
       openwiki_init: tool({
         description:
-          "Scaffold the wiki/ directory for this project from the OpenWiki templates (README, TEMPLATE, INDEX, QUESTIONS), and install the /wiki-init and /wiki-consistency commands. Safe to call more than once — never overwrites existing wiki files.",
+          "Scaffold the wiki/ directory for this project from the OpenWiki templates (README, TEMPLATE, INDEX, QUESTIONS) and install the /wiki-init, /wiki-write, /wiki-consistency, and /wiki-dedup slash commands into .opencode/commands/. Safe to call more than once — never overwrites existing files.",
         args: {
           projectName: tool.schema.string().optional(),
         },
@@ -105,7 +106,27 @@ async function initWiki(directory: string, projectName?: string): Promise<string
     filesWritten++
   }
 
-  return `OpenWiki initialized for "${name}": ${filesWritten} wiki file(s) written to wiki/.`
+  const commandsDest = path.join(directory, ".opencode", "commands")
+  await fs.mkdir(commandsDest, { recursive: true })
+  let commandsInstalled = 0
+  let commandsSkipped = 0
+  for (const file of await fs.readdir(COMMANDS_DIR)) {
+    if (!file.endsWith(".md")) continue
+    const dest = path.join(commandsDest, file)
+    if (await exists(dest)) {
+      commandsSkipped++
+      continue
+    }
+    const src = await fs.readFile(path.join(COMMANDS_DIR, file), "utf8")
+    await fs.writeFile(dest, src, "utf8")
+    commandsInstalled++
+  }
+
+  return (
+    `OpenWiki initialized for "${name}": ${filesWritten} wiki file(s) written to wiki/, ` +
+    `${commandsInstalled} command(s) installed in .opencode/commands/ ` +
+    `(${commandsSkipped} already present, left untouched).`
+  )
 }
 
 interface OnSessionIdleInput {
