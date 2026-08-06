@@ -1,9 +1,9 @@
-# <PROJECT_NAME> Wiki — Index
+# <PROJECT_NAME> Wiki - Index
 
 Session knowledge base for the <PROJECT_NAME> project - one Markdown page per debugging
 chase, investigation, code review, or set of changes. See [README.md](README.md) for conventions
-and [TEMPLATE.md](TEMPLATE.md) for the page template. New pages are added and updated automatically
-by the plugin.
+and [TEMPLATE.md](TEMPLATE.md) for the page template. New pages are created or updated on demand
+with `/wiki-update`; the plugin only scaffolds the wiki.
 
 ## Pages
 
@@ -11,4 +11,4 @@ _Newest first._
 
 ## By topic
 
-_Topic clusters maintained by the Consistency Agent; topics with the most pages first._
+_Optional: cluster pages by subject matter here, largest cluster first._

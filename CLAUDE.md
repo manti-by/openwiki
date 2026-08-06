@@ -4,12 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-OpenWiki is an **OpenCode plugin** (published to npm as `@manti-by/openwiki`) that maintains a local, per-project session wiki under `wiki/`. It is not a standalone app — `src/index.ts` exports a factory `OpenWiki({client, directory})` that OpenCode loads and calls with a host-provided client.
+OpenWiki is an **OpenCode plugin** (published to npm as `@manti-by/openwiki`) that scaffolds a per-project session wiki under `wiki/`. It is not a standalone app — `src/index.ts` exports a factory `OpenWiki({client, directory})` that OpenCode loads and calls with a host-provided client. The plugin is install-only: on load it copies slash commands into `.opencode/commands/` and writes the `wiki/` scaffold from `templates/`. It does not run any background agent, hook any events, or register any tools.
 
 ## Commands
 
 - `bun install` — install dependencies
-- `bun run build` — compile `src/` to `dist/` (`bun build`, external `@opencode-ai/plugin`)
+- `bun run build` — compile `src/` to `dist/` (`bun build`)
 - `bun run build:types` — emit `.d.ts` only (`tsc --declaration --emitDeclarationOnly`)
 - `bun test` — run all tests (Bun's runner executes the `node:test`-style specs in `test/`)
 - `bun test test/wiki.test.ts` — run a single test file
@@ -26,27 +26,23 @@ Tests import compiled-style paths (`../src/lib/wiki.js`, not `.ts`) even though 
 
 ## Architecture
 
-Three-file source tree, all in `src/`:
+Two-file source tree, all in `src/`:
 
-- **`src/index.ts`** — the plugin entry point. Registers two tools (`openwiki_init`, `openwiki_write`) and one event handler (`session.idle`). This is the only file that talks to the OpenCode host (`client.session.*`, `client.config.get`).
-- **`src/lib/wiki.ts`** — pure filesystem/string helpers: path resolution (`wikiRoot`, `pagesRoot`), frontmatter parsing (a hand-rolled regex, no YAML dependency — see `splitFrontmatter`), slugify/filename generation, and `upsertIndexEntry` (keeps `wiki/INDEX.md`'s `## Pages` section deduplicated and newest-first).
-- **`src/lib/summarize.ts`** — pure prompt-building and response-parsing: `buildWikiAgentPrompt` renders the prompt sent to the child session from `wiki-agent-prompt.txt` (a `{{token}}` template loaded via Bun's `type: "text"` import and inlined at build time — no runtime file I/O), `transcriptFromMessages` flattens OpenCode message objects into a role-tagged transcript, `parseAgentJson` tolerantly extracts a JSON object from a subagent reply (handles markdown fences and stray prose).
+- **`src/index.ts`** — the plugin entry point. Exports `OpenWiki({client, directory})` (the `client` argument is accepted for type compatibility with the host but is not used). On load it calls `install` which runs `installCommands` and `scaffoldWiki` back-to-back.
+- **`src/lib/wiki.ts`** — pure filesystem helpers: `wikiRoot` resolves the project's `wiki/` directory, `exists` is a small `fs.access` wrapper. No string processing, no model calls, no host client.
 
-`wiki.ts` and `summarize.ts` have no dependency on `@opencode-ai/plugin` and are directly unit-testable; `index.ts` is the thin, host-coupled glue layer.
+`wiki.ts` has no host dependency and is directly unit-testable; `index.ts` is the thin orchestrator.
 
-### Wiki Agent flow (the `session.idle` handler)
+### Install flow
 
-1. Skip if `wiki/` isn't initialized, or the session transcript is under `MIN_TRANSCRIPT_CHARS` (80).
-2. Skip if the transcript matches wiki-maintenance-only patterns (`/wiki-dedup`, `/wiki-consistency`) — these sessions modify the wiki but aren't project work worth their own page.
-3. Look up any existing page for this session via `session_id` in frontmatter (`findExistingPageForSession`) so repeated idle events update one page instead of creating duplicates.
-4. Build a prompt from `wiki/README.md` + `wiki/TEMPLATE.md` + the transcript, resolve a model (`openwiki.json` -> first user message's model -> host config default), spawn an ephemeral child session (`client.session.create` + `client.session.prompt`), and parse its reply as strict JSON (`{"skip": true}` or full page content).
-5. If not skipped, write/overwrite the page under `wiki/pages/` and upsert the `INDEX.md` entry.
+1. `installCommands` ensures `<project>/.opencode/commands/` exists, then copies every `commands/*.md` into it, skipping any file that already exists (never overwrites a user-customised command).
+2. `scaffoldWiki` ensures `<project>/wiki/` exists, then writes each template (`README.md`, `TEMPLATE.md`, `INDEX.md`, `QUESTIONS.md`) with `<PROJECT_NAME>` substituted to the directory name, skipping any file that already exists.
 
-The page-worthiness decision always belongs to the Wiki Agent (the LLM), never a hardcoded heuristic — `index.ts` only pre-filters near-empty/maintenance transcripts to avoid spawning a subagent for nothing.
+Both steps are idempotent and safe to call repeatedly.
 
 ### Slash commands (`commands/*.md`)
 
-Four command definitions, installed into `.opencode/commands/` by `openwiki_init`: `/wiki-init` (calls the `openwiki_init` tool), `/wiki-write` (calls `openwiki_write` for the current session), `/wiki-consistency` (an inline agent that clusters pages, cross-checks for contradictions, resolves what it can, and files the rest in `QUESTIONS.md`), and `/wiki-dedup` (an inline agent that merges near-duplicate pages). The consistency/dedup commands run as prompts directly in the invoking session — they don't spawn a child session like the Wiki Agent does.
+Command definitions, installed into `.opencode/commands/` on plugin load: `/wiki-consistency`, `/wiki-dedup`, `/wiki-update`. They are plain markdown prompts for the user to invoke; the plugin does not implement or register any tool to call them programmatically.
 
 ### Templates vs. live wiki
 
@@ -54,7 +50,6 @@ Four command definitions, installed into `.opencode/commands/` by `openwiki_init
 
 ## Key constraints
 
-- **ESM + TypeScript, no runtime deps.** `@opencode-ai/plugin` (the `tool` helper) is a devDependency, injected by the OpenCode host at runtime — it is not listed under `dependencies`.
-- **Wiki is opt-in per project.** Nothing happens until `/wiki-init` runs; it is idempotent and never overwrites existing files.
-- **Model config** lives in a project's `openwiki.json` (`{"model": "providerID/modelID"}`), read fresh on every `session.idle` — see `resolveModel` in `src/index.ts`.
+- **ESM + TypeScript, no runtime deps.** No import from `@opencode-ai/plugin`. The plugin only does filesystem work.
+- **Install is idempotent.** Both `installCommands` and `scaffoldWiki` skip files that already exist. Re-running either is safe.
 - **Biome is the sole linter and formatter** (`biome.json`) — covers both linting and formatting in one tool; don't introduce ESLint or Prettier alongside it.

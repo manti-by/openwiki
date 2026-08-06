@@ -3,12 +3,25 @@
 **This is an OpenCode plugin** (published to npm as `@manti-by/openwiki`), not a standalone app.
 Entry: `src/index.ts` exports `OpenWiki({client, directory})`.
 
+## Scope
+
+OpenWiki is an **install-only** plugin. It does not run a background agent, hook
+any OpenCode events, or register any tools. On plugin load it does two things:
+
+1. Copies every `commands/*.md` into `<project>/.opencode/commands/`, skipping
+   any that already exist (never overwrites a user-customised command).
+2. Writes the `wiki/` scaffold (`README.md`, `TEMPLATE.md`, `INDEX.md`,
+   `QUESTIONS.md`) from the bundled templates with `<PROJECT_NAME>` substituted
+   to the directory name, skipping any file that already exists.
+
+That's it.
+
 ## Commands
 
 | Task | Command |
 |------|---------|
 | Install | `bun install` (or `make install`) |
-| Build | `bun run build` (compiles `src/` to `dist/` via `bun build`, external `@opencode-ai/plugin`) |
+| Build | `bun run build` (compiles `src/` to `dist/` via `bun build`) |
 | Lint | `bun run lint` (Biome check, `biome.json`) |
 | Format | `bun run format` (Biome auto-fix, `biome.json`) |
 | Typecheck | `bun run typecheck` (`tsc --noEmit`) |
@@ -22,11 +35,7 @@ CI (`.github/workflows/ci.yml`) runs `make install && make build && make check` 
 
 ## Key constraints
 
-- **No runtime deps.** `@opencode-ai/plugin` (`tool`) is a devDependency, injected by the OpenCode host at runtime — not listed under `dependencies`. Code that imports it cannot be tested directly outside the host.
-- **TypeScript + ESM**, built and tested with Bun (no Node/npm required for development). `src/index.ts` is the only file coupled to the host; `src/lib/wiki.ts` and `src/lib/summarize.ts` are pure and directly unit-testable.
-- **Wiki is opt-in but commands self-install.** The plugin's `OpenWiki` factory runs `installCommandsIfMissing` on load, copying `commands/*.md` into `<project>/.opencode/commands/` (skipping any that already exist). This makes `/wiki-init`, `/wiki-write`, `/wiki-consistency`, and `/wiki-dedup` available the first time the user restarts OpenCode after adding the plugin to `opencode.json`. The `wiki/` scaffold itself is still gated behind an explicit `/wiki-init` (or a call to the `openwiki_init` tool), so nothing else is written without the user asking.
-- **Wiki Agent** runs on `session.idle` (skips if wiki not initialized or transcript < 80 chars, or if the transcript is wiki-maintenance-only). Spawns a child session via `client.session.create` + `client.session.prompt`, expects pure JSON reply (`{skip:true}` or page content). Can also be force-invoked via the `openwiki_write` tool (`/wiki-write`).
-- **Consistency Agent** (`/wiki-consistency`) and **Dedup Agent** (`/wiki-dedup`) run inline as prompts in the current session — no child session.
-- **Frontmatter parsing** is a simple regex (`splitFrontmatter` in `src/lib/wiki.ts`) — no YAML library dependency.
-- **Model config.** Create `openwiki.json` in the project root with `"model": "providerID/modelID"` (e.g. `"anthropic/claude-sonnet-4-20250514"`) to set the Wiki Agent's model. Falls back to the first user message's model, then to the default from `opencode.json`.
+- **No runtime deps at all.** The plugin does not import from `@opencode-ai/plugin` (no `tool` helper, no event handler) — it is pure filesystem work driven from the `OpenWiki` factory. There are no host-coupled files in the source tree; even `src/index.ts` only takes the `directory` argument and never touches `client`.
+- **TypeScript + ESM**, built and tested with Bun (no Node/npm required for development). `src/index.ts` and `src/lib/wiki.ts` are both pure and directly unit-testable.
+- **Install is idempotent.** Both `installCommands` and `scaffoldWiki` skip files that already exist. Re-loading the plugin is safe.
 - **Biome is the sole linter and formatter** (`biome.json`) — no ESLint, no Prettier.

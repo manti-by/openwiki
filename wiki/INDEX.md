@@ -2,11 +2,12 @@
 
 Session knowledge base for the OpenWiki project - one Markdown page per debugging
 chase, investigation, code review, or set of changes. See [README.md](README.md) for conventions
-and [TEMPLATE.md](TEMPLATE.md) for the page template. New pages are added and updated automatically
-by the plugin.
+and [TEMPLATE.md](TEMPLATE.md) for the page template. New pages are created or updated on demand
+with `/wiki-update`; the plugin only scaffolds the wiki.
 
 ## Pages
 
+- [Install-Only Plugin Refactor](pages/2026-08-06-install-only-plugin-refactor.md) — Stripped OpenWiki to an install-only plugin (copy commands + scaffold wiki/, no tools/events/agents); replaced /wiki-init and /wiki-write with a self-contained /wiki-update writer command; dropped @opencode-ai/plugin (2026-08-06)
 - [Self-Installing Slash Commands on Plugin Load](pages/2026-07-28-slash-command-self-bootstrap.md) — Plugin now auto-installs four /wiki-* commands on load via `installCommandsIfMissing`, solving the chicken-and-egg bootstrap problem; shared helper extracted; docs updated; bumped to rc4 (2026-07-28)
 - [Fix Warp Notification Flicker from the Background Writer Session](pages/2026-07-28-warp-notification-flicker-fix.md) — Writer session now created with a parentID so Warp's opencode plugin suppresses its lifecycle notifications; idle handler skips background/child sessions (2026-07-28)
 - [Writer Session Reuse for Wiki Agent](pages/2026-07-22-writer-session-reuse.md) — Cached child writer session ID in a dotfile to avoid creating a new session on every idle/wiki-write call (2026-07-22)

@@ -1,7 +1,7 @@
 {
   "name": "@manti-by/openwiki",
-  "version": "0.3.0-rc5",
-  "description": "OpenCode plugin that maintains a local, per-project session wiki: a Wiki Agent summarizes noteworthy sessions into wiki/, and a Consistency Agent keeps the index and pages honest over time.",
+  "version": "0.4.0-a",
+  "description": "OpenCode plugin that scaffolds a per-project session wiki (commands, templates, and the wiki/ directory). Install-only — no background agent, no event hooks.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -30,7 +30,7 @@
     "node": ">=18"
   },
   "scripts": {
-    "build": "bun build src/index.ts --outdir dist --target node --external @opencode-ai/plugin",
+    "build": "bun build src/index.ts --outdir dist --target node",
     "build:types": "tsc --declaration --emitDeclarationOnly",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
@@ -46,7 +46,6 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.4",
-    "@opencode-ai/plugin": "^1.17.20",
     "@types/bun": "latest",
     "@types/node": "^22.0.0",
     "typescript": "^5.0.0"

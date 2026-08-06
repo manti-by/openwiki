@@ -8,7 +8,7 @@ services: []
 branch: master
 tickets: []
 tags: [architecture, design-spec, wiki-agent, consistency-agent, dedup-agent, reference]
-related: [2026-07-14-systematic-codebase-exploration-and-architecture.md]
+related: [2026-07-14-systematic-codebase-exploration-and-architecture.md, 2026-08-06-install-only-plugin-refactor.md]
 ---
 
 # OpenWiki Plugin Design Spec
@@ -132,4 +132,5 @@ current session's first user message, then falls back to the default from `openc
 
 - Related: [[2026-07-14-systematic-codebase-exploration-and-architecture]]
 - Related: [[2026-07-16-security-review-and-biome-migration]]
+- Related: [[2026-08-06-install-only-plugin-refactor]]
 - External: —

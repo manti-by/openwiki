@@ -8,7 +8,7 @@ services: []
 branch: master
 tickets: []
 tags: [openwiki, plugin, commands, bootstrap, opencode]
-related: [2026-07-28-warp-notification-flicker-fix.md]
+related: [2026-07-28-warp-notification-flicker-fix.md, 2026-08-06-install-only-plugin-refactor.md]
 ---
 
 # Self-Installing Slash Commands on Plugin Load
@@ -180,6 +180,7 @@ $ bun run lint && bun run typecheck && bun test
 ## References
 
 - Related: [[2026-07-28-warp-notification-flicker-fix]]
+- Related: [[2026-08-06-install-only-plugin-refactor]]
 - Source: `packages/opencode/src/plugin/shared.ts:readV1Plugin` (default export is mandatory)
 - Source: `packages/opencode/src/plugin/index.ts:applyPlugin` (calls `readV1Plugin` in `detect` mode, silently returns when the default is missing)
 - External: [OpenCode Plugins](https://opencode.ai/docs/plugins/)
