@@ -23,7 +23,13 @@ test("plugin load installs every command and writes every wiki scaffold file", a
   await OpenWiki({ client: {} as never, directory: dir })
 
   const commands = await listCommands(dir)
-  assert.deepEqual(commands, ["wiki-consistency.md", "wiki-dedup.md", "wiki-update.md"])
+  assert.deepEqual(commands, [
+    "wiki-agents-file.md",
+    "wiki-archive.md",
+    "wiki-consistency.md",
+    "wiki-dedup.md",
+    "wiki-update.md",
+  ])
 
   for (const file of ["README.md", "TEMPLATE.md", "INDEX.md", "QUESTIONS.md"]) {
     const content = await fs.readFile(path.join(dir, "wiki", file), "utf8")
@@ -70,7 +76,13 @@ test("plugin load is a no-op for files that already exist on a re-load", async (
   const dir = await makeDir()
   await OpenWiki({ client: {} as never, directory: dir })
 
-  for (const file of ["wiki-consistency.md", "wiki-dedup.md", "wiki-update.md"]) {
+  for (const file of [
+    "wiki-agents-file.md",
+    "wiki-archive.md",
+    "wiki-consistency.md",
+    "wiki-dedup.md",
+    "wiki-update.md",
+  ]) {
     await fs.writeFile(path.join(dir, ".opencode", "commands", file), `SEED ${file}`, "utf8")
   }
   for (const file of ["README.md", "TEMPLATE.md", "INDEX.md", "QUESTIONS.md"]) {
@@ -79,7 +91,13 @@ test("plugin load is a no-op for files that already exist on a re-load", async (
 
   await OpenWiki({ client: {} as never, directory: dir })
 
-  for (const file of ["wiki-consistency.md", "wiki-dedup.md", "wiki-update.md"]) {
+  for (const file of [
+    "wiki-agents-file.md",
+    "wiki-archive.md",
+    "wiki-consistency.md",
+    "wiki-dedup.md",
+    "wiki-update.md",
+  ]) {
     assert.equal(
       await fs.readFile(path.join(dir, ".opencode", "commands", file), "utf8"),
       `SEED ${file}`,

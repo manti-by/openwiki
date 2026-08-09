@@ -10,7 +10,13 @@ const TEMPLATES_DIR = path.join(__dirname, "..", "templates")
 
 test("every command has valid frontmatter with a description and the build agent", async () => {
   const files = (await fs.readdir(COMMANDS_DIR)).filter((file) => file.endsWith(".md"))
-  assert.deepEqual(files.sort(), ["wiki-consistency.md", "wiki-dedup.md", "wiki-update.md"])
+  assert.deepEqual(files.sort(), [
+    "wiki-agents-file.md",
+    "wiki-archive.md",
+    "wiki-consistency.md",
+    "wiki-dedup.md",
+    "wiki-update.md",
+  ])
 
   for (const file of files) {
     const content = await fs.readFile(path.join(COMMANDS_DIR, file), "utf8")

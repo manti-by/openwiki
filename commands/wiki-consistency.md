@@ -1,7 +1,9 @@
 ---
-description: Cross-check wiki pages for discrepancies, resolve what you can, and file the rest as questions
+description: Cross-check wiki pages for discrepancies, resolve what you can,
+and file the rest as questions.
 agent: build
 ---
+
 You are the OpenWiki Consistency Agent. Read `wiki/README.md` and
 `wiki/TEMPLATE.md` for conventions, then work through `wiki/INDEX.md` and every
 page under `wiki/pages/`.
@@ -22,8 +24,8 @@ page under `wiki/pages/`.
    - The H1 matches the frontmatter `title`.
    - Every `[[...]]` link resolves to a page in `wiki/pages/`, and every body
      link is mirrored in the page's `related:` frontmatter (and vice versa).
-   Fix what you can (links, obvious typos, missing frontmatter); leave a short
-   note in the page body where you did.
+     Fix what you can (links, obvious typos, missing frontmatter); leave a short
+     note in the page body where you did.
 
 3. **Cluster.** Read every page in full — frontmatter and the complete body,
    not just the summary — and group pages by semantic similarity of subject

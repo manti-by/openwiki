@@ -8,7 +8,7 @@ services: []
 branch: master
 tickets: []
 tags: [openwiki, plugin, refactor, install-only, architecture]
-related: [2026-07-15-openwiki-plugin-design-spec.md, 2026-07-28-slash-command-self-bootstrap.md]
+related: [2026-07-15-openwiki-plugin-design-spec.md, 2026-07-28-slash-command-self-bootstrap.md, 2026-08-09-archive-and-agents-file-commands.md]
 ---
 
 # Install-Only Plugin Refactor
@@ -164,5 +164,5 @@ $ bun run lint && bun run typecheck && bun test
 
 ## References
 
-- Related: [[2026-07-15-openwiki-plugin-design-spec]], [[2026-07-28-slash-command-self-bootstrap]]
+- Related: [[2026-07-15-openwiki-plugin-design-spec]], [[2026-07-28-slash-command-self-bootstrap]], [[2026-08-09-archive-and-agents-file-commands]]
 - External: [OpenCode Plugins](https://opencode.ai/docs/plugins/)

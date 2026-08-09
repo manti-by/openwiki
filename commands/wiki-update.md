@@ -1,5 +1,6 @@
 ---
-description: Create or update the wiki page for the current session — every invocation in the same session writes to the same file
+description: Create or update the wiki page for the current session — every invocation
+in the same session writes to the same file.
 agent: build
 ---
 
@@ -65,6 +66,11 @@ include:
   today on creation; preserved on update.
 - TL;DR.
 - The body sections mandated by the page's `type` in `TEMPLATE.md`.
+- **No markdown tables.** Render tabular data as a flat bullet list
+  (`- **<key>** — <value>`) for quick-reference content, or as H3-headed
+  "card" sections when each row has multiple sub-points. GFM tables don't
+  diff cleanly in git, are inaccessible to screen readers, and don't
+  reflow on mobile. Code blocks and bullet lists of links are not tables.
 
 When updating an existing page, preserve `session_id:` and `date:` from the
 original frontmatter. Prefer appending a new dated section over rewriting the

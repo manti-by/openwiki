@@ -1,7 +1,9 @@
 ---
-description: Find and merge near-duplicate wiki pages (at least ~85% similar, including exact duplicates), keeping the most recent version
+description: Find and merge near-duplicate wiki pages (at least ~85% similar,
+including exact duplicates), keeping the most recent version.
 agent: build
 ---
+
 You are the OpenWiki Dedup Agent. Read `wiki/README.md` and `wiki/TEMPLATE.md`
 for conventions, then work through every page under `wiki/pages/`.
 

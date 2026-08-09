@@ -7,6 +7,7 @@ with `/wiki-update`; the plugin only scaffolds the wiki.
 
 ## Pages
 
+- [Archive and AGENTS-File Commands](pages/2026-08-09-archive-and-agents-file-commands.md) — Added /wiki-archive (retires old pages, merging durable content into current pages and moving originals to wiki/archive/) and /wiki-agents-file (revalidates AGENTS.md against code, wiki, and git log); line-wrapped command frontmatter; bumped to 0.4.1-a (2026-08-09)
 - [Install-Only Plugin Refactor](pages/2026-08-06-install-only-plugin-refactor.md) — Stripped OpenWiki to an install-only plugin (copy commands + scaffold wiki/, no tools/events/agents); replaced /wiki-init and /wiki-write with a self-contained /wiki-update writer command; dropped @opencode-ai/plugin (2026-08-06)
 - [Self-Installing Slash Commands on Plugin Load](pages/2026-07-28-slash-command-self-bootstrap.md) — Plugin now auto-installs four /wiki-* commands on load via `installCommandsIfMissing`, solving the chicken-and-egg bootstrap problem; shared helper extracted; docs updated; bumped to rc4 (2026-07-28)
 - [Fix Warp Notification Flicker from the Background Writer Session](pages/2026-07-28-warp-notification-flicker-fix.md) — Writer session now created with a parentID so Warp's opencode plugin suppresses its lifecycle notifications; idle handler skips background/child sessions (2026-07-28)
@@ -43,6 +44,7 @@ _Topic clusters maintained by the Consistency Agent; topics with the most pages 
 - [Troubleshooting Plugin Load and Crash Loop](pages/2026-07-13-plugin-load-and-crash.md)
 
 ### Documentation & Tooling
+- [Archive and AGENTS-File Commands](pages/2026-08-09-archive-and-agents-file-commands.md)
 - [Revalidate and Update Documentation, Verify openwiki_write Tool](pages/2026-07-13-update-wiki-write-docs.md)
 - [Wiki Deduplication Command](pages/2026-07-14-wiki-dedup-command.md)
 
