@@ -10,26 +10,30 @@ async function makeDir(): Promise<string> {
   return fs.mkdtemp(path.join(os.tmpdir(), "openwiki-test-"))
 }
 
-async function listCommands(dir: string): Promise<string[]> {
+async function listInstalledSkills(dir: string): Promise<string[]> {
   try {
-    return (await fs.readdir(path.join(dir, ".opencode", "commands"))).sort()
+    const skillsDir = path.join(dir, ".opencode", "skills")
+    const entries = await fs.readdir(skillsDir, { withFileTypes: true })
+    return entries
+      .filter((e) => e.isDirectory())
+      .map((e) => e.name)
+      .sort()
   } catch {
     return []
   }
 }
 
-test("plugin load installs every command and writes every wiki scaffold file", async () => {
+test("plugin load installs every skill and writes every wiki scaffold file", async () => {
   const dir = await makeDir()
   await OpenWiki({ client: {} as never, directory: dir })
 
-  const commands = await listCommands(dir)
-  assert.deepEqual(commands, [
-    "wiki-agents-file.md",
-    "wiki-archive.md",
-    "wiki-consistency.md",
-    "wiki-dedup.md",
-    "wiki-update.md",
-  ])
+  const skills = await listInstalledSkills(dir)
+  assert.deepEqual(skills, ["wiki-agents-file", "wiki-archive", "wiki-consistency", "wiki-dedup", "wiki-sync"])
+
+  for (const skill of skills) {
+    const content = await fs.readFile(path.join(dir, ".opencode", "skills", skill, "SKILL.md"), "utf8")
+    assert.ok(content.length > 0, `${skill}/SKILL.md should be non-empty`)
+  }
 
   for (const file of ["README.md", "TEMPLATE.md", "INDEX.md", "QUESTIONS.md"]) {
     const content = await fs.readFile(path.join(dir, "wiki", file), "utf8")
@@ -48,14 +52,14 @@ test("wiki scaffold substitutes <PROJECT_NAME> with the directory name", async (
   }
 })
 
-test("plugin load does not overwrite a user-customised command", async () => {
+test("plugin load does not overwrite a user-customised skill file", async () => {
   const dir = await makeDir()
-  await fs.mkdir(path.join(dir, ".opencode", "commands"), { recursive: true })
-  await fs.writeFile(path.join(dir, ".opencode", "commands", "wiki-update.md"), "CUSTOM UPDATE", "utf8")
+  await fs.mkdir(path.join(dir, ".opencode", "skills", "wiki-sync"), { recursive: true })
+  await fs.writeFile(path.join(dir, ".opencode", "skills", "wiki-sync", "SKILL.md"), "CUSTOM SYNC", "utf8")
 
   await OpenWiki({ client: {} as never, directory: dir })
 
-  assert.equal(await fs.readFile(path.join(dir, ".opencode", "commands", "wiki-update.md"), "utf8"), "CUSTOM UPDATE")
+  assert.equal(await fs.readFile(path.join(dir, ".opencode", "skills", "wiki-sync", "SKILL.md"), "utf8"), "CUSTOM SYNC")
 })
 
 test("plugin load does not overwrite a pre-existing wiki file", async () => {
@@ -76,14 +80,9 @@ test("plugin load is a no-op for files that already exist on a re-load", async (
   const dir = await makeDir()
   await OpenWiki({ client: {} as never, directory: dir })
 
-  for (const file of [
-    "wiki-agents-file.md",
-    "wiki-archive.md",
-    "wiki-consistency.md",
-    "wiki-dedup.md",
-    "wiki-update.md",
-  ]) {
-    await fs.writeFile(path.join(dir, ".opencode", "commands", file), `SEED ${file}`, "utf8")
+  const skills = ["wiki-agents-file", "wiki-archive", "wiki-consistency", "wiki-dedup", "wiki-sync"]
+  for (const skill of skills) {
+    await fs.writeFile(path.join(dir, ".opencode", "skills", skill, "SKILL.md"), `SEED ${skill}`, "utf8")
   }
   for (const file of ["README.md", "TEMPLATE.md", "INDEX.md", "QUESTIONS.md"]) {
     await fs.writeFile(path.join(dir, "wiki", file), `SEED ${file}`, "utf8")
@@ -91,17 +90,11 @@ test("plugin load is a no-op for files that already exist on a re-load", async (
 
   await OpenWiki({ client: {} as never, directory: dir })
 
-  for (const file of [
-    "wiki-agents-file.md",
-    "wiki-archive.md",
-    "wiki-consistency.md",
-    "wiki-dedup.md",
-    "wiki-update.md",
-  ]) {
+  for (const skill of skills) {
     assert.equal(
-      await fs.readFile(path.join(dir, ".opencode", "commands", file), "utf8"),
-      `SEED ${file}`,
-      `${file} should be untouched on a re-load`,
+      await fs.readFile(path.join(dir, ".opencode", "skills", skill, "SKILL.md"), "utf8"),
+      `SEED ${skill}`,
+      `${skill}/SKILL.md should be untouched on a re-load`,
     )
   }
   for (const file of ["README.md", "TEMPLATE.md", "INDEX.md", "QUESTIONS.md"]) {

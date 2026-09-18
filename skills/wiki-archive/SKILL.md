@@ -1,11 +1,12 @@
 ---
+name: Archive old wiki pages
 description: Archive old wiki pages (default > 3 months) by extracting any
 still-useful information into the most relevant current pages, then move the
 originals from wiki/pages/ to wiki/archive/.
 agent: build
 ---
 
-You are the OpenWiki Archive Agent. Read `wiki/README.md` and `wiki/TEMPLATE.md`
+You are the Wiki Archive Agent. Read `wiki/README.md` and `wiki/TEMPLATE.md`
 for conventions, then work through every page under `wiki/pages/`.
 
 Pages are session-scoped — once a session is old enough that the detailed
@@ -116,17 +117,29 @@ For each (candidate, target) pair:
    If the candidate was archived without merge, drop the link and the
    `related:` entry instead.
 
-5. **Stamp a "moved to" note on the candidate (only when a merge
+5. **Update `wiki/QUESTIONS.md` references.** Scan `wiki/QUESTIONS.md`
+   for `**Pages:**` fields listing the candidate. For a candidate that
+   was merged, rewrite the reference to the merge target. For a
+   candidate archived without merge, rewrite it to a resolvable archive
+   reference (`wiki/archive/<candidate-filename-without-.md>`) so the
+   question keeps pointing at the content. Do this now — alongside the
+   related-list and body-link updates above — so no dangling question
+   reference survives step 5.
+
+6. **Stamp a "moved to" note on the candidate (only when a merge
    happened).** Just below the candidate's H1, prepend:
 
-   ```
+   ```text
    > **Archived on YYYY-MM-DD.** Useful info merged into
-   > [[<target-filename-without-.md>]]. See wiki/archive/ for the
+   > [[<target-1-filename-without-.md>]] and
+   > [[<target-2-filename-without-.md>]]. See wiki/archive/ for the
    > original.
    ```
 
-   Use today's date. Skip this note if the candidate was archived
-   without merge (step 2.3).
+   List **every** merge target — one `[[...]]` link per target, joined
+   with "and" (a candidate may merge into 2–3 targets, step 2.3). Use
+   today's date. Skip this note if the candidate was archived without
+   merge (step 2.3).
 
 ## 4. Per-candidate isolation
 
@@ -147,7 +160,7 @@ defer A to the next run.
    rather than a delete + add). If the destination already exists
    (collision with a previous archive), append a `-2`, `-3`, … suffix
    until the path is free; record the rename in the report.
-3. **Update `wiki/.openwiki-sessions.json`.** For each archived candidate,
+3. **Update `wiki/.sessions.json`.** For each archived candidate,
    if the session-id → filename mapping points at the candidate, redirect
    it to the target page (or remove the entry if archived without merge).
    Leave any other-session-id mapping that happens to point at the

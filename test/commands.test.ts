@@ -5,25 +5,27 @@ import { test } from "node:test"
 import { fileURLToPath } from "node:url"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const COMMANDS_DIR = path.join(__dirname, "..", "commands")
+const SKILLS_DIR = path.join(__dirname, "..", "skills")
 const TEMPLATES_DIR = path.join(__dirname, "..", "templates")
 
-test("every command has valid frontmatter with a description and the build agent", async () => {
-  const files = (await fs.readdir(COMMANDS_DIR)).filter((file) => file.endsWith(".md"))
-  assert.deepEqual(files.sort(), [
-    "wiki-agents-file.md",
-    "wiki-archive.md",
-    "wiki-consistency.md",
-    "wiki-dedup.md",
-    "wiki-update.md",
-  ])
+test("skills directory contains exactly the expected skill subdirectories", async () => {
+  const entries = await fs.readdir(SKILLS_DIR, { withFileTypes: true })
+  const dirs = entries
+    .filter((e) => e.isDirectory())
+    .map((e) => e.name)
+    .sort()
+  assert.deepEqual(dirs, ["wiki-agents-file", "wiki-archive", "wiki-consistency", "wiki-dedup", "wiki-sync"])
+})
 
-  for (const file of files) {
-    const content = await fs.readFile(path.join(COMMANDS_DIR, file), "utf8")
-    const match = content.match(/^---\n([\s\S]*?)\n---\n/)
-    assert.ok(match, `${file} must start with YAML frontmatter`)
-    assert.match(match[1], /description:/, `${file} must declare a description`)
-    assert.match(match[1], /^agent: build$/m, `${file} must run on the build agent`)
+test("every skill subdirectory contains a SKILL.md", async () => {
+  const entries = await fs.readdir(SKILLS_DIR, { withFileTypes: true })
+  const dirs = entries.filter((e) => e.isDirectory()).map((e) => e.name)
+  for (const dir of dirs) {
+    const skillFile = path.join(SKILLS_DIR, dir, "SKILL.md")
+    const stat = await fs.stat(skillFile).catch(() => null)
+    assert.ok(stat?.isFile(), `${dir}/SKILL.md must exist and be a file`)
+    const content = await fs.readFile(skillFile, "utf8")
+    assert.ok(content.trim().length > 0, `${dir}/SKILL.md must not be empty`)
   }
 })
 

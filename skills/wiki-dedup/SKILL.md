@@ -1,10 +1,11 @@
 ---
+name: Merge duplicated wiki pages
 description: Find and merge near-duplicate wiki pages (at least ~85% similar,
 including exact duplicates), keeping the most recent version.
 agent: build
 ---
 
-You are the OpenWiki Dedup Agent. Read `wiki/README.md` and `wiki/TEMPLATE.md`
+You are the Wiki Dedup Agent. Read `wiki/README.md` and `wiki/TEMPLATE.md`
 for conventions, then work through every page under `wiki/pages/`.
 
 1. **Read all pages.** Read every `.md` file in `wiki/pages/`. Parse the
@@ -24,11 +25,13 @@ for conventions, then work through every page under `wiki/pages/`.
 3. **Decide what to merge.** Only auto-merge pairs that are the same session:
    identical `session_id`, or clearly the same session recorded twice. For
    pages from distinct sessions, do NOT merge — instead cross-link the two
-   pages (add each to the other's `related`) and move on. If the two pages
-   make materially conflicting claims (opposite statuses, contradicting
-   facts), do NOT auto-merge: verify which claim is current against the
-   codebase/docs first, or file a question in `wiki/QUESTIONS.md` and skip the
-   pair.
+   pages: add each to the other's `related` frontmatter **and** add a
+   reciprocal body `[[...]]` link on both pages (the consistency agent
+   requires the two representations to stay in sync), then move on. If the
+   two pages make materially conflicting claims (opposite statuses,
+   contradicting facts), do NOT auto-merge: verify which claim is current
+   against the codebase/docs first, or file a question in
+   `wiki/QUESTIONS.md` and skip the pair.
 
 4. **Merge each eligible pair.** For each near-duplicate pair, pick a
    **survivor** filename and merge the second page into it:
@@ -61,7 +64,7 @@ for conventions, then work through every page under `wiki/pages/`.
      entry in both sections. Keep newest-first order.
    - `wiki/QUESTIONS.md` — point any `**Pages:**` reference at the survivor or
      drop the deleted filename.
-   - `wiki/.openwiki-sessions.json` — redirect every mapping whose value is
+   - `wiki/.sessions.json` — redirect every mapping whose value is
      the deleted filename to the survivor; drop any stale entry whose key is a
      different session id but whose value is the survivor filename.
    - Every remaining page — rewrite `related:` frontmatter and body `[[...]]`

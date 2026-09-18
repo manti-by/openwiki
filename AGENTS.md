@@ -8,7 +8,7 @@ Entry: `src/index.ts` exports `OpenWiki({client, directory})`.
 OpenWiki is an **install-only** plugin. It does not run a background agent, hook
 any OpenCode events, or register any tools. On plugin load it does two things:
 
-1. Copies every `commands/*.md` into `<project>/.opencode/commands/`, skipping
+1. Copies every `skill/*` into `<project>/.opencode/skills/`, skipping
    any that already exist (never overwrites a user-customised command).
 2. Writes the `wiki/` scaffold (`README.md`, `TEMPLATE.md`, `INDEX.md`,
    `QUESTIONS.md`) from the bundled templates with `<PROJECT_NAME>` substituted

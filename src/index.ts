@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url"
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const PACKAGE_ROOT = path.dirname(__dirname)
 const TEMPLATES_DIR = path.join(PACKAGE_ROOT, "templates")
-const COMMANDS_DIR = path.join(PACKAGE_ROOT, "commands")
+const SKILLS_DIR = path.join(PACKAGE_ROOT, "skills")
 
 export async function exists(p: string): Promise<boolean> {
   try {
@@ -24,25 +24,31 @@ export const OpenWiki = async ({ directory }: { client: unknown; directory: stri
 }
 
 async function installCommands(directory: string): Promise<{ installed: number; skipped: number }> {
-  const commandsDest = path.join(directory, ".opencode", "commands")
-  await fs.mkdir(commandsDest, { recursive: true })
+  const skillsDest = path.join(directory, ".opencode", "skills")
+  await fs.mkdir(skillsDest, { recursive: true })
 
   let installed = 0
   let skipped = 0
-  for (const file of await fs.readdir(COMMANDS_DIR)) {
-    if (!file.endsWith(".md")) continue
 
-    const dest = path.join(commandsDest, file)
-    if (await exists(dest)) {
-      skipped++
-      continue
+  async function copyDir(src: string, dest: string): Promise<void> {
+    await fs.mkdir(dest, { recursive: true })
+    for (const entry of await fs.readdir(src, { withFileTypes: true })) {
+      const srcPath = path.join(src, entry.name)
+      const destPath = path.join(dest, entry.name)
+      if (entry.isDirectory()) {
+        await copyDir(srcPath, destPath)
+      } else {
+        if (await exists(destPath)) {
+          skipped++
+        } else {
+          await fs.copyFile(srcPath, destPath)
+          installed++
+        }
+      }
     }
-
-    const src = await fs.readFile(path.join(COMMANDS_DIR, file), "utf8")
-    await fs.writeFile(dest, src, "utf8")
-
-    installed++
   }
+
+  await copyDir(SKILLS_DIR, skillsDest)
   return { installed, skipped }
 }
 
