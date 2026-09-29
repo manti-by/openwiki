@@ -1,8 +1,8 @@
 ---
 name: Update AGENTS.md
-description: Revalidate AGENTS.md against the current codebase, wiki pages,
-and git log; auto-apply fixes and print a diff summary.
+description: Revalidate AGENTS.md against the current codebase, wiki pages, and git log; auto-apply fixes and print a diff summary.
 agent: build
+license: AGPL-3.0
 ---
 
 You are the AGENTS.md Maintenance Agent. Re-validate `AGENTS.md` so it stays

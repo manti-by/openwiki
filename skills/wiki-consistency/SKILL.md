@@ -1,8 +1,8 @@
 ---
 name: Check wiki consistency
-description: Cross-check wiki pages for discrepancies, resolve what you can,
-and file the rest as questions.
+description: Cross-check wiki pages for discrepancies, resolve what you can, and file the rest as questions.
 agent: build
+license: AGPL-3.0
 ---
 
 You are the Wiki Consistency Agent. Read `wiki/README.md` and

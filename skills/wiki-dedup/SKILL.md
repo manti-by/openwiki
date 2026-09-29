@@ -1,8 +1,8 @@
 ---
 name: Merge duplicated wiki pages
-description: Find and merge near-duplicate wiki pages (at least ~85% similar,
-including exact duplicates), keeping the most recent version.
+description: Find and merge near-duplicate wiki pages (at least ~85% similar, including exact duplicates), keeping the most recent version.
 agent: build
+license: AGPL-3.0
 ---
 
 You are the Wiki Dedup Agent. Read `wiki/README.md` and `wiki/TEMPLATE.md`
