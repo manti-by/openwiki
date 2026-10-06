@@ -1,7 +1,6 @@
 ---
 name: Sync wiki page
-description: Create or update the wiki page for the current session - every invocation
-in the same session writes to the same file.
+description: Create or update a wiki page - every run in the same session writes to the same file.
 agent: build
 license: AGPL-3.0
 ---
