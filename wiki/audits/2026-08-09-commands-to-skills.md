@@ -1,3 +1,16 @@
+---
+type: Wiki Audit
+title: Commands to Skills — Migration Audit
+description: Pros/cons audit of migrating the flat commands/*.md install to per-skill directories, with a recommended approach.
+tags: [audit, skills, plugin]
+generated: { by: opencode/agent, at: 2026-08-09T12:00:00Z }
+status: stable
+resolution: reference
+date: 2026-08-09
+---
+
+# Commands to Skills — Audit
+
 ## Implementation Plan
 
 **Recommended approach: do not refactor.** The five `commands/*.md` files are user-invoked, `agent: build` slash commands that drive deterministic, multi-step filesystem workflows — that is exactly what OpenCode commands are for, and the current "install only, copy flat `.md` files" design is the minimum-friction implementation. Skills in OpenCode are aimed at a different shape (agent-discoverable workflows, often bundled with scripts/references), and switching would mostly trade a working UX for a heavier install path without changing the runtime behavior.

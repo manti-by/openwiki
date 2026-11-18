@@ -1,14 +1,17 @@
 ---
-title: OpenWiki Plugin Design Spec
-date: 2026-07-15
 type: investigation
-status: reference
+title: OpenWiki Plugin Design Spec
+description: Canonical design spec for the plugin (wiki layout, Wiki/Consistency/Dedup Agents, config, tech stack), converted from the repo-root DOCS.md
+tags: [architecture, design-spec, wiki-agent, consistency-agent, dedup-agent, reference]
+generated: { by: opencode/agent, at: 2026-07-15T12:00:00Z }
+status: stable
+resolution: reference
+date: 2026-07-15
 session_id: 02964221-6c57-43d6-9377-e59e331b65e0
 services: []
 branch: master
 tickets: []
-tags: [architecture, design-spec, wiki-agent, consistency-agent, dedup-agent, reference]
-related: [2026-07-14-systematic-codebase-exploration-and-architecture.md, 2026-08-06-install-only-plugin-refactor.md]
+related: [pages/2026-07-14-systematic-codebase-exploration-and-architecture, pages/2026-08-06-install-only-plugin-refactor, pages/2026-07-16-security-review-and-biome-migration]
 ---
 
 # OpenWiki Plugin Design Spec
@@ -102,7 +105,7 @@ current session's first user message, then falls back to the default from `openc
   to develop the plugin (the plugin itself only needs Node >= 18 to run, per `engines` in
   `package.json`).
 - **Biome** — linting and formatting in one tool (`biome.json`), see
-  [[2026-07-16-security-review-and-biome-migration]].
+  [Security Review and Biome Migration](/pages/2026-07-16-security-review-and-biome-migration.md).
 
 ### Working with Bun
 
@@ -130,7 +133,7 @@ current session's first user message, then falls back to the default from `openc
 
 ## References
 
-- Related: [[2026-07-14-systematic-codebase-exploration-and-architecture]]
-- Related: [[2026-07-16-security-review-and-biome-migration]]
-- Related: [[2026-08-06-install-only-plugin-refactor]]
+- Related: [Systematic OpenWiki Codebase Exploration and Architecture Analysis](/pages/2026-07-14-systematic-codebase-exploration-and-architecture.md)
+- Related: [Security Review and Biome Migration](/pages/2026-07-16-security-review-and-biome-migration.md)
+- Related: [Install-Only Plugin Refactor](/pages/2026-08-06-install-only-plugin-refactor.md)
 - External: —

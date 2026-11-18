@@ -1,29 +1,30 @@
 ---
-title: First /wiki-dedup Command Run — Audit Pair Merged
-date: 2026-07-14
 type: implementation
-status: resolved
+title: First /wiki-dedup Command Run — Audit Pair Merged
+description: Exercised the dedup command against the live wiki; merged the audit pair, confirmed architecture triplicate was already handled, deleted 3 files
+tags: [dedup, cleanup, wiki-agent, wiki]
+generated: { by: opencode/agent, at: 2026-07-14T12:00:00Z }
+status: stable
+resolution: resolved
+date: 2026-07-14
 session_id: ses_0a012026bffefCeGroODrO7QKn
 services: []
-branch: -
+branch: "-"
 tickets: []
-tags: [dedup, cleanup, wiki-agent, wiki]
-related:
-  - 2026-07-14-wiki-dedup-command.md
-  - 2026-07-14-duplicate-page-cleanup.md
+related: [pages/2026-07-14-wiki-dedup-command, pages/2026-07-14-duplicate-page-cleanup]
 ---
 
 # First /wiki-dedup Command Run — Audit Pair Merged
 
 ## TL;DR
 
-Exercised the `/wiki-dedup` command (created in a prior session) against the live wiki. Found 2 near-duplicate pairs: the audit pair (merged) and an architecture triplicate (already handled by a prior dedup). Deleted 3 files total, leaving 9 pages. The follow-up from [[2026-07-14-wiki-dedup-command.md]] is now resolved.
+Exercised the `/wiki-dedup` command (created in a prior session) against the live wiki. Found 2 near-duplicate pairs: the audit pair (merged) and an architecture triplicate (already handled by a prior dedup). Deleted 3 files total, leaving 9 pages. The follow-up from [Wiki Deduplication Command](/pages/2026-07-14-wiki-dedup-command.md) is now resolved.
 
 ---
 
 ## Overview
 
-The `/wiki-dedup` command was implemented in [[2026-07-14-wiki-dedup-command.md]] with a follow-up noting it hadn't been run yet. This session exercised it against the live wiki to find any existing near-duplicates.
+The `/wiki-dedup` command was implemented in [Wiki Deduplication Command](/pages/2026-07-14-wiki-dedup-command.md) with a follow-up noting it hadn't been run yet. This session exercised it against the live wiki to find any existing near-duplicates.
 
 ## Step 1 — Pairwise scan
 
@@ -37,7 +38,7 @@ Walked all pages under `wiki/pages/`. Two pairs exceeded the ~85-90% similarity 
 
 ### Pair 2 — Architecture Reference (triplicate, already handled)
 
-- `2026-07-14-systematic-codebase-exploration-and-architecture.md` already had a `merged_sessions` frontmatter field from [[2026-07-14-duplicate-page-cleanup.md]], confirming the other two architecture files had been merged in a prior run.
+- `2026-07-14-systematic-codebase-exploration-and-architecture.md` already had a `merged_sessions` frontmatter field from [Duplicate Wiki Page Cleanup from Nested Agent Evaluations](/pages/2026-07-14-duplicate-page-cleanup.md), confirming the other two architecture files had been merged in a prior run.
 - No further work needed beyond ensuring the survivor's `merged_sessions` included the session from the third page.
 
 ## Step 2 — Cross-reference update
@@ -62,8 +63,8 @@ Three remaining pages referenced the deleted `audit-and-doc-verification.md`:
 
 ## Follow-ups
 
-- Consider adding a pre-check in the Wiki Agent to avoid creating near-duplicates in the first place (carried forward from [[2026-07-14-duplicate-page-cleanup.md]])
+- Consider adding a pre-check in the Wiki Agent to avoid creating near-duplicates in the first place (carried forward from [Duplicate Wiki Page Cleanup from Nested Agent Evaluations](/pages/2026-07-14-duplicate-page-cleanup.md))
 
 ## References
 
-- Related: [[2026-07-14-wiki-dedup-command.md]], [[2026-07-14-duplicate-page-cleanup.md]]
+- Related: [Wiki Deduplication Command](/pages/2026-07-14-wiki-dedup-command.md), [Duplicate Wiki Page Cleanup from Nested Agent Evaluations](/pages/2026-07-14-duplicate-page-cleanup.md)

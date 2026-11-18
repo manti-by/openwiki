@@ -1,14 +1,17 @@
 ---
-title: Duplicate Wiki Page Cleanup from Nested Agent Evaluations
-date: 2026-07-14
 type: implementation
-status: resolved
+title: Duplicate Wiki Page Cleanup from Nested Agent Evaluations
+description: Identified and merged 3 near-duplicate wiki pages created by independent Wiki Agent evaluations of the same transcript
+tags: [dedup, cleanup, wiki-agent]
+generated: { by: opencode/agent, at: 2026-07-14T12:00:00Z }
+status: stable
+resolution: resolved
+date: 2026-07-14
 session_id: ses_0a010e53effeIdc2mh2mAzGHoM
 services: [core]
-branch: -
+branch: "-"
 tickets: []
-tags: [dedup, cleanup, wiki-agent]
-related: [2026-07-13-project-audit.md]
+related: [pages/2026-07-13-project-audit]
 ---
 
 # Duplicate Wiki Page Cleanup from Nested Agent Evaluations
@@ -56,4 +59,4 @@ The root cause was that the Wiki Agent evaluates sessions independently without 
 
 ## References
 
-- Related: [[2026-07-13-project-audit.md]]
+- Related: [Project Structure and Documentation Audit](/pages/2026-07-13-project-audit.md)

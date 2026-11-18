@@ -1,6 +1,6 @@
 ---
 name: Archive old wiki pages
-description: Archive old wiki pages (default > 3 months) by extracting any still-useful information into the most relevant current pages, then move the originals from wiki/pages/ to wiki/archive/.
+description: Archive old OKF wiki pages (default > 3 months) by extracting any still-useful information into the most relevant current pages, then move the originals from wiki/pages/ to wiki/archive/ and mark them status: deprecated.
 agent: build
 license: AGPL-3.0
 ---
@@ -11,8 +11,9 @@ for conventions, then work through every page under `wiki/pages/`.
 Pages are session-scoped — once a session is old enough that the detailed
 narrative is no longer the freshest source of truth, distil whatever is **still
 useful** (decisions, conventions, stable patterns, external refs) into the most
-relevant current page, then retire the original to `wiki/archive/` so the
-active `wiki/pages/` stays focused on recent sessions.
+relevant current page, then retire the original to `wiki/archive/` (with OKF
+`status: deprecated`) so the active `wiki/pages/` stays focused on recent
+sessions.
 
 The default age threshold is **3 months** (compare each page's `date:` against
 `date +%F` today). **Hard floor: `wiki/pages/` must always contain at least 100
@@ -31,15 +32,17 @@ explicitly says `force`/`ignore-floor`.
 
 1. **Enumerate pages.** Read every `.md` file in `wiki/pages/`. Parse the
    frontmatter of each — you need `date` (the session date), `status`,
-   `type`, `services`, `tickets`, `tags`, and `related` at minimum.
+   `resolution`, `type`, `services`, `tickets`, `tags`, and `related` at
+   minimum.
 2. **Filter by age.** A page is a candidate if its `date` is older than the
    threshold. Pages without a parseable `date` are NOT candidates — log them
    in the report and skip (do not guess; bad data must surface, not be
    silently archived).
-3. **Filter by status.** Pages with `status: open` or `status: in-progress`
-   are NOT candidates — they are still being actively worked on, and
-   archiving them would hide live state. Skip them and note them in the
-   report under "needs human review".
+3. **Filter by lifecycle.** Pages with `resolution: open` or
+   `resolution: in-progress` are NOT candidates — they are still being
+   actively worked on, and archiving them would hide live state. Pages with
+   `status: draft` (OKF: not yet reviewed) are also NOT candidates. Skip all
+   of these and note them in the report under "needs human review".
 4. **Filter by open follow-ups.** If a candidate's body has a `## Follow-ups`
    section with any non-trivial entry (anything other than `- None`), skip
    the page. Live follow-ups must not be silently retired — leave the page
@@ -90,63 +93,62 @@ For each remaining candidate:
 For each (candidate, target) pair:
 
 1. **Insert into the target.** Add a new body section to the target page,
-   inserted **immediately before** the target's `## Follow-ups` section,
-   with the heading:
+   inserted **immediately before** the target's `## Follow-ups` section, with
+   the heading:
 
    ```
-   ## Source — [[<candidate-filename-without-.md>]]
+   ## Source — [<candidate title>](/archive/<candidate-filename>.md)
    ```
 
-   Under that heading, copy the useful info distilled in step 2. Quote short
-   snippets verbatim; paraphrase long passages. Whenever you carry a
-   decision or convention forward, attribute it inline:
-   "Originally decided in [[<candidate-filename-without-.md>]] on
-   YYYY-MM-DD" — the date lets the reader judge the source's recency.
+   The link points at the archive location, where the candidate will live
+   after step 5. Under that heading, copy the useful info distilled in
+   step 2. Quote short snippets verbatim; paraphrase long passages. Whenever
+   you carry a decision or convention forward, attribute it inline:
+   "Originally decided in [<candidate title>](/archive/<candidate-filename>
+   .md) on YYYY-MM-DD" — the date lets the reader judge the source's recency.
 
 2. **Update target frontmatter.**
-   - Append the candidate's filename to the target's `related:` list
-     (and `tickets:`, `tags:`, `services:` — union, deduped, no
-     reordering).
+   - Append the candidate's concept ID (`pages/<candidate-filename-without-
+     .md>`) to the target's `related:` list, and union the candidate's
+     `tickets:`, `tags:`, `services:` (deduped, no reordering).
    - Do **not** change the target's `date`, `session_id`, `title`, or
-     `status`.
+     `status`. Refresh the target's `generated.at` to the merge time.
 
-3. **Update the candidate's `related:` list (now).** For every other
-   page in `wiki/pages/` that currently lists the candidate in its
-   `related:` frontmatter (the target, plus any sibling you noticed in
-   step 2.3), rewrite the entry to point at the **target**. Do this now
-   — step 5 will delete the candidate file and dangling references must
-   be gone by then.
+3. **Update inbound references to the candidate (now).** For every other
+   page in `wiki/pages/` that currently lists the candidate's concept ID in
+   its `related:` frontmatter (the target, plus any sibling you noticed in
+   step 2.3), rewrite the entry to point at the **target**. Do this now —
+   step 5 will delete the candidate file from `pages/` and dangling
+   references must be gone by then.
 
-4. **Body `[[...]]` cross-links.** For each surviving page in
-   `wiki/pages/` that has a body `[[candidate-filename-without-.md]]`
-   link, rewrite it to `[[target-filename-without-.md]]`. Mirror the
-   change in that page's `related:` frontmatter so the two stay in sync.
-   If the candidate was archived without merge, drop the link and the
-   `related:` entry instead.
+4. **Body links.** For each surviving page in `wiki/pages/` that has a body
+   link to `/pages/<candidate-filename>.md`, rewrite it to
+   `/archive/<candidate-filename>.md`. Mirror the change in that page's
+   `related:` frontmatter so the two stay in sync. If the candidate was
+   archived without merge, drop the link and the `related:` entry instead.
 
-5. **Update `wiki/QUESTIONS.md` references.** Scan `wiki/QUESTIONS.md`
-   for `**Pages:**` fields listing the candidate. For a candidate that
-   was merged, rewrite the reference to the merge target. For a
-   candidate archived without merge, rewrite it to a resolvable archive
-   reference (`wiki/archive/<candidate-filename-without-.md>`) so the
-   question keeps pointing at the content. Do this now — alongside the
-   related-list and body-link updates above — so no dangling question
-   reference survives step 5.
+5. **Update `wiki/QUESTIONS.md` references.** Scan `wiki/QUESTIONS.md` for
+   `**Pages:**` fields linking the candidate. For a candidate that was
+   merged, rewrite the link to the merge target. For a candidate archived
+   without merge, rewrite it to a resolvable archive link
+   (`[<title>](/archive/<candidate-filename>.md)`) so the question keeps
+   pointing at the content. Do this now — alongside the related-list and
+   body-link updates above — so no dangling question reference survives
+   step 5.
 
 6. **Stamp a "moved to" note on the candidate (only when a merge
    happened).** Just below the candidate's H1, prepend:
 
    ```text
    > **Archived on YYYY-MM-DD.** Useful info merged into
-   > [[<target-1-filename-without-.md>]] and
-   > [[<target-2-filename-without-.md>]]. See wiki/archive/ for the
-   > original.
+   > [<target-1 title>](/pages/<target-1-filename>.md) and
+   > [<target-2 title>](/pages/<target-2-filename>.md). See `wiki/archive/`
+   > for the original.
    ```
 
-   List **every** merge target — one `[[...]]` link per target, joined
-   with "and" (a candidate may merge into 2–3 targets, step 2.3). Use
-   today's date. Skip this note if the candidate was archived without
-   merge (step 2.3).
+   Link **every** merge target — one link per target, joined with "and" (a
+   candidate may merge into 2–3 targets, step 2.3). Use today's date. Skip
+   this note if the candidate was archived without merge (step 2.3).
 
 ## 4. Per-candidate isolation
 
@@ -158,48 +160,57 @@ If you find yourself wanting to merge A into B and B is also a candidate,
 stop — promote B's content into a third (non-candidate) page first, or
 defer A to the next run.
 
-## 5. Move the originals
+## 5. Deprecate and move the originals
 
-1. **Create the archive directory** if it does not exist:
+1. **Mark each candidate deprecated.** Set its frontmatter `status:` to
+   `deprecated` (OKF lifecycle) — keep `resolution:` and everything else
+   unchanged. An archived page must read as retired from its frontmatter
+   alone.
+2. **Create the archive directory** if it does not exist:
    `mkdir -p wiki/archive`.
-2. **Move** each candidate from `wiki/pages/<name>.md` to
+3. **Move** each candidate from `wiki/pages/<name>.md` to
    `wiki/archive/<name>.md` using `git mv` (so git tracks the rename
    rather than a delete + add). If the destination already exists
    (collision with a previous archive), append a `-2`, `-3`, … suffix
    until the path is free; record the rename in the report.
-3. **Update `wiki/.sessions.json`.** For each archived candidate,
+4. **Update `wiki/.sessions.json`.** For each archived candidate,
    if the session-id → filename mapping points at the candidate, redirect
    it to the target page (or remove the entry if archived without merge).
    Leave any other-session-id mapping that happens to point at the
-   candidate alone — `wiki-update` cleans those on its next write.
+   candidate alone — the writer cleans those on its next write.
 
-## 6. Update the index
+## 6. Update the index and log
 
-Reconcile `wiki/INDEX.md`:
+Reconcile `wiki/index.md` (preserve its `okf_version` frontmatter block):
 
-- `## Pages`: remove every archived page's entry. Do not reorder the
-  rest — keep newest-first order intact. If a target's title or summary
+- `# Pages`: remove every archived page's entry. Do not reorder the
+  rest — keep newest-first order intact. If a target's title or description
   materially changed (rare — only when a merge actually changed what the
   page is about), note it for the consistency agent to revisit on its
   next run.
-- `## By topic`: drop archived pages from their clusters. If a cluster
+- `# By topic`: drop archived pages from their clusters. If a cluster
   loses its last page, remove the cluster heading entirely.
-- Do **not** add an `## Archive` section — the consistency agent
-  maintains the archive catalog, not this command. `wiki/archive/`
+- Do **not** add an archive section to the index — `wiki/archive/`
   existing on disk is the source of truth.
+
+Then append to `wiki/log.md`: under today's `## YYYY-MM-DD` heading (create
+it, newest first, if needed), add one entry per archived page:
+`* **Deprecation**: [<candidate title>](archive/<candidate-filename>.md) —
+retired; merged into [<target title>](pages/<target>.md).` (or "retired
+without merge").
 
 ## 7. Report
 
 Print a short summary at the end:
 
 - How many candidates were considered, and how many were skipped per
-  filter in step 1 (bad date / live status / open follow-ups), with one
-  line per skip category.
+  filter in step 1 (bad date / live resolution / draft status / open
+  follow-ups), with one line per skip category.
 - For each archived page: the candidate filename, the target(s) it
   merged into (or "no target — archived without merge"), and a one-line
   description of what useful info was carried forward.
 - The "needs human review" list: any candidates that were skipped
-  because of open follow-ups or live status, with the filename and the
-  reason.
+  because of open follow-ups, draft status, or live resolution, with the
+  filename and the reason.
 
 End with a one-line verdict: `N archived, M skipped, K needs-human-review`.

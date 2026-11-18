@@ -16,7 +16,7 @@ reviews the resulting diff in git.
    of every concrete claim it makes: paths, module names, tool names,
    conventions, commands, external services, version pins, "do not" rules.
 
-2. **Scan the wiki.** Read `wiki/INDEX.md`, then skim every entry it links
+2. **Scan the wiki.** Read `wiki/index.md`, then skim every entry it links
    under `wiki/pages/`. Read deeper into a page only when it touches an
    AGENTS.md section you're auditing. Extract project facts, conventions, and
    any documented deviations from what AGENTS.md currently says.
@@ -28,15 +28,12 @@ reviews the resulting diff in git.
    - File purposes — read the file's docstring / top-of-file to confirm role.
    - Tooling, linters, type checkers, Python version, dependency lists — read
      `pyproject.toml`, `Makefile`, `.pre-commit-config.yaml` (and equivalents).
-   - Naming and architecture rules — sample a few files per layer
-     (`demetra/library/`, `demetra/services/`, `demetra/workflows/`,
-     `demetra/api/`, `demetra/tools/`).
+   - Naming and architecture rules — sample a few files per layer.
    - The "Do NOT use" list — `grep` for the forbidden patterns to confirm
      they really are forbidden and the list is complete.
 
 4. **Scan git log.** Run `git log --oneline -100` plus targeted
-   `git log --stat -- <path>` for the paths AGENTS.md mentions
-   (`demetra/`, `tests/`, `pyproject.toml`, `.opencode/`, `migrations/`).
+   `git log --stat -- <path>` for the paths AGENTS.md mentions.
    Look for renames, new modules, dropped tools, version bumps, and
    convention changes that haven't been folded into AGENTS.md yet.
 
@@ -60,7 +57,7 @@ reviews the resulting diff in git.
 
 7. **Print a diff summary.** Show what changed, grouped by the three
    buckets above. For each fix, cite the source of truth that justified it
-   (e.g. `demetra/foo.py:12`, `wiki/pages/2026-07-23-...md`, commit SHA).
+   (e.g. `foo/bar.py:12`, `wiki/pages/2026-07-23-...md`, commit SHA).
    End with a one-line verdict: `N stale, M missing, K wrong → AGENTS.md
 updated` (or `no drift detected` if nothing changed).
 

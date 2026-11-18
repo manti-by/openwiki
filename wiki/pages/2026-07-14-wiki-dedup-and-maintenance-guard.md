@@ -1,13 +1,16 @@
 ---
-title: Wiki Dedup Command and Maintenance Guard
-date: 2026-07-14
 type: implementation
-status: resolved
+title: Wiki Dedup Command and Maintenance Guard
+description: Added /wiki-dedup command for merging ~85-90% similar pages and a two-layer guard to prevent wiki agent from self-documenting during maintenance commands
+tags: [wiki, tooling, maintenance, event-handler]
+generated: { by: opencode/agent, at: 2026-07-14T12:00:00Z }
+status: stable
+resolution: resolved
+date: 2026-07-14
 session_id: ses_0a00dc108ffejaDDjk8jixScDv
 services: []
-branch: -
+branch: "-"
 tickets: []
-tags: [wiki, tooling, maintenance, event-handler]
 related: []
 ---
 

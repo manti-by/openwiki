@@ -10,8 +10,8 @@ any OpenCode events, or register any tools. On plugin load it does two things:
 
 1. Copies every `skill/*` into `<project>/.opencode/skills/`, skipping
    any that already exist (never overwrites a user-customised command).
-2. Writes the `wiki/` scaffold (`README.md`, `TEMPLATE.md`, `INDEX.md`,
-   `QUESTIONS.md`) from the bundled templates with `<PROJECT_NAME>` substituted
+2. Writes the `wiki/` scaffold (`README.md`, `TEMPLATE.md`, `index.md`,
+   `log.md`, `QUESTIONS.md`) from the bundled templates with `<PROJECT_NAME>` substituted
    to the directory name, skipping any file that already exists.
 
 That's it.
@@ -41,6 +41,16 @@ CI (`.github/workflows/ci.yml`) runs `make install && make build && make check` 
   in git, are inaccessible to screen readers, and don't reflow on mobile.
   Render tabular data as a flat bullet list (`- **<key>** — <value>`) for
   quick-reference content, or as H3-headed "card" sections when each row
-  has multiple sub-points. Code blocks, the wiki `INDEX.md` link lists,
+  has multiple sub-points. Code blocks, the wiki `index.md` link lists,
   and YAML frontmatter are not tables. This rule applies to `AGENTS.md`,
-  every file under `wiki/`, and every page rendered by `/wiki-update`.
+  every file under `wiki/`, and every page rendered by `/wiki-sync`.
+
+- **The wiki is an OKF bundle.** `wiki/` follows Google's Open Knowledge
+  Format v0.2 (`GoogleCloudPlatform/open-knowledge-format`): every
+  non-reserved `.md` file carries YAML frontmatter with a non-empty `type`,
+  `index.md` and `log.md` are the only reserved filenames, cross-links are
+  standard markdown links (never `[[wikilinks]]`), and OKF `status` is
+  `draft | stable | deprecated` (archived pages are `deprecated`; the
+  session's own outcome lives in the `resolution` extension). The skills
+  under `skills/` and the templates under `templates/` must keep the bundle
+  conformant.

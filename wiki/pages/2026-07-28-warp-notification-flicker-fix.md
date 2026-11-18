@@ -1,14 +1,17 @@
 ---
-title: Fix Warp Notification Flicker from the Background Writer Session
-date: 2026-07-28
 type: debug
-status: resolved
-session_id: -
+title: Fix Warp Notification Flicker from the Background Writer Session
+description: Writer session now created with a parentID so Warp's opencode plugin suppresses its lifecycle notifications; idle handler skips background/child sessions
+tags: [openwiki, plugin, notifications, warp, opencode]
+generated: { by: opencode/agent, at: 2026-07-28T12:00:00Z }
+status: stable
+resolution: resolved
+date: 2026-07-28
+session_id: "-"
 services: []
 branch: master
 tickets: []
-tags: [openwiki, plugin, notifications, warp, opencode]
-related: [2026-07-22-writer-session-reuse.md]
+related: [pages/2026-07-22-writer-session-reuse]
 ---
 
 # Fix Warp Notification Flicker from the Background Writer Session
@@ -86,7 +89,7 @@ const childSession = await client.session.create({
 ```
 
 `parentID` is baked in at creation and persists across the cached-session reuse
-(see [[2026-07-22-writer-session-reuse]]); if the parent is later deleted, the existing
+(see [Writer Session Reuse for Wiki Agent](/pages/2026-07-22-writer-session-reuse.md)); if the parent is later deleted, the existing
 liveness check recreates the writer, so it is self-healing.
 
 2. Guard the `session.idle` handler with `isBackgroundSession`, which skips OpenWiki's own
@@ -119,5 +122,5 @@ $ make check
 
 ## References
 
-- Related: [[2026-07-22-writer-session-reuse]]
+- Related: [Writer Session Reuse for Wiki Agent](/pages/2026-07-22-writer-session-reuse.md)
 - External: [warpdotdev/opencode-warp](https://github.com/warpdotdev/opencode-warp), [OpenCode Plugins](https://opencode.ai/docs/plugins/)

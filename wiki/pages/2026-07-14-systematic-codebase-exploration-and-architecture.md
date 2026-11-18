@@ -1,15 +1,18 @@
 ---
-title: Systematic OpenWiki Codebase Exploration and Architecture Analysis
-date: 2026-07-14
 type: investigation
-status: reference
-session_id: ses_0a013aa80ffe5ZwBXMcOigXDD8
-merged_sessions: [ses_0a0112267ffemILrD1H8Bv5x8d, ses_0a011e2bbffeJblXP7avdmH7gp, ses_0a01955d9ffens56OEB2iVkPgH, ses_0a0128eaaffe0oj1di3iGzXF7g]
-services: [core]
-branch: -
-tickets: []
+title: Systematic OpenWiki Codebase Exploration and Architecture Analysis
+description: "Full architectural reference: plugin wiring, Wiki Agent lifecycle, Consistency Agent workflow, command registration, and wiki page schema"
 tags: [exploration, architecture, plugin-system, onboarding]
-related: [2026-07-13-comprehensive-project-exploration.md, 2026-07-13-project-audit.md, 2026-07-15-openwiki-plugin-design-spec.md]
+generated: { by: opencode/agent, at: 2026-07-14T12:00:00Z }
+status: stable
+resolution: reference
+date: 2026-07-14
+session_id: ses_0a013aa80ffe5ZwBXMcOigXDD8
+services: [core]
+branch: "-"
+tickets: []
+related: [pages/2026-07-13-comprehensive-project-exploration, pages/2026-07-13-project-audit, pages/2026-07-15-openwiki-plugin-design-spec]
+merged_sessions: [ses_0a0112267ffemILrD1H8Bv5x8d, ses_0a011e2bbffeJblXP7avdmH7gp, ses_0a01955d9ffens56OEB2iVkPgH, ses_0a0128eaaffe0oj1di3iGzXF7g]
 ---
 
 # Systematic OpenWiki Codebase Exploration and Architecture Analysis
@@ -93,5 +96,5 @@ Source-of-truth command definitions live in `commands/wiki-{init,write,consisten
 
 ## References
 
-- Related: [[2026-07-13-comprehensive-project-exploration.md]], [[2026-07-13-project-audit.md]], [[2026-07-15-openwiki-plugin-design-spec.md]]
+- Related: [Comprehensive Project Exploration and Audit](/pages/2026-07-13-comprehensive-project-exploration.md), [Project Structure and Documentation Audit](/pages/2026-07-13-project-audit.md), [OpenWiki Plugin Design Spec](/pages/2026-07-15-openwiki-plugin-design-spec.md)
 - External: https://opencode.ai — OpenCode plugin API

@@ -1,14 +1,17 @@
 ---
-title: Recursive Wiki Agent Evaluations Causing Duplicate Pages
-date: 2026-07-14
 type: investigation
-status: resolved
+title: Recursive Wiki Agent Evaluations Causing Duplicate Pages
+description: Investigation into how independent Wiki Agent evaluations of the same transcript produced duplicate pages, with root cause and resolution via dedup
+tags: [wiki-agent, dedup, recursion, meta]
+generated: { by: opencode/agent, at: 2026-07-14T12:00:00Z }
+status: stable
+resolution: resolved
+date: 2026-07-14
 session_id: ses_0a00da217ffeBq08LOqfGiyM9w
 services: [core]
-branch: -
+branch: "-"
 tickets: []
-tags: [wiki-agent, dedup, recursion, meta]
-related: [2026-07-14-duplicate-page-cleanup.md]
+related: [pages/2026-07-14-duplicate-page-cleanup]
 ---
 
 # Recursive Wiki Agent Evaluations Causing Duplicate Pages
@@ -54,4 +57,4 @@ The dedup command (`commands/wiki-consistency.md`) handles ~85-90% similarity me
 
 ## References
 
-- Related: [[2026-07-14-duplicate-page-cleanup.md]]
+- Related: [Duplicate Wiki Page Cleanup from Nested Agent Evaluations](/pages/2026-07-14-duplicate-page-cleanup.md)

@@ -1,6 +1,6 @@
 ---
 name: Sync wiki page
-description: Create or update a wiki page - every run in the same session writes to the same file.
+description: Create or update a wiki page in OKF format — every run in the same session writes to the same file.
 agent: build
 license: AGPL-3.0
 ---
@@ -10,8 +10,8 @@ gets exactly **one** wiki page under `wiki/pages/`. Every `/wiki-sync`
 invocation within the same session must update that same file — never create a
 new one, unless this session has no page yet.
 
-If `wiki/pages/` does not exist (a fresh scaffold ships only the four meta
-files), create it first and treat it as an empty page set.
+If `wiki/pages/` does not exist (a fresh scaffold ships only the meta files),
+create it first and treat it as an empty page set.
 
 ## 1. Resolve this session's existing page
 
@@ -68,19 +68,40 @@ code-review / implementation): require step-by-step fixes, files modified, and
 test results only where that type's preset calls for them. Every page must
 include:
 
-- Frontmatter with `session_id:` set to your session id, and `date:` set to
-  today on creation; preserved on update.
+- YAML frontmatter with a **non-empty `type:`** (OKF's one required field),
+  matching one of the template's types, and `title:` matching the page's H1.
+  Set `description:` to the one-line summary you will reuse in `index.md`.
+- `generated: { by: <actor>, at: <ISO-8601-UTC> }` — the OKF trust field.
+  `by` uses the actor convention: `opencode/<model-id>` for your own writes,
+  `human:<id>` for human-authored content, `process:<id>` for automation.
+  On creation, `at` is the write time; on later meaningful edits, refresh
+  `at` (keep `by`).
+- `status:` — OKF lifecycle, `draft | stable | deprecated`. New pages default
+  to `stable`; use `draft` only when the user explicitly asks for an
+  unreviewed page.
+- `resolution:` — the session's outcome (`resolved | open | in-progress |
+  reference`), an extension distinct from OKF `status`.
+- `session_id:` set to your session id, and `date:` set to today on creation;
+  both preserved on update. Write list fields (`services`, `tickets`, `tags`,
+  `related`) as inline YAML flow lists on one line — `services: [api, react]`,
+  empty as `[]` - never block style. Quote `branch` (`"-"`) and any
+  numeric-looking tag (`'403'`). See `wiki/README.md`.
 - TL;DR.
 - The body sections mandated by the page's `type` in `TEMPLATE.md`.
+- **Standard markdown links only** (OKF §6): cross-link sibling pages as
+  `[Title](/pages/<filename>.md)`, bundle-relative, and mirror every body
+  link in `related:` as a concept ID (`pages/<filename-without-.md>`), one
+  entry per link, no self-link. Never write `[[wikilinks]]`.
 - **No markdown tables.** Render tabular data as a flat bullet list
   (`- **<key>** — <value>`) for quick-reference content, or as H3-headed
   "card" sections when each row has multiple sub-points. GFM tables don't
   diff cleanly in git, are inaccessible to screen readers, and don't
   reflow on mobile. Code blocks and bullet lists of links are not tables.
 
-When updating an existing page, preserve `session_id:` and `date:` from the
-original frontmatter. Prefer appending a new dated section over rewriting the
-body — earlier work stays visible. Use the canonical heading
+When updating an existing page, preserve `session_id:`, `date:`, `type:`, and
+`status:` from the original frontmatter (unless the user asks for a change),
+and refresh `generated.at`. Prefer appending a new dated section over
+rewriting the body — earlier work stays visible. Use the canonical heading
 `## Update — YYYY-MM-DD HH:MM` inserted directly before `## Follow-ups`; if a
 same-day section already exists, extend it instead of adding another.
 
@@ -105,15 +126,34 @@ and a trailing newline.
 
 ## 5. Update the index
 
-`wiki/INDEX.md` lists pages under `## Pages`, newest first, in this format:
+`wiki/index.md` (the OKF directory listing) lists pages under `# Pages`,
+newest first, in this format:
 
 ```
-- [<title>](pages/<filename>) — <one-line summary> (<date>)
+- [<title>](pages/<filename>.md) — <one-line summary> (<date>)
 ```
 
+- Use the page's frontmatter `description` as the summary so the index stays
+  derived from the concepts themselves.
 - If you created a new page, insert its entry immediately after the
   `_Newest first._` marker line.
 - If you updated an existing page, update its existing entry in place (title,
   summary, or date if they changed) but do NOT reorder it.
+- Preserve the `okf_version: "0.2"` frontmatter block at the top of the file.
+
+## 6. Update the log
+
+Append an entry to `wiki/log.md` (the OKF update history). Read the file
+first (create it with the heading `# <project> Wiki — Update Log` if missing),
+then:
+
+- Ensure a `## YYYY-MM-DD` heading for today exists directly below the file's
+  intro; date headings are newest first, so insert today's heading above the
+  current top heading if needed.
+- Under it, add exactly one entry at the top of that day's list:
+  `* **Creation**: [<title>](pages/<filename>.md) — <one-line summary>.` for a
+  new page, or `* **Update**: [<title>](pages/<filename>.md) — <what changed>.`
+  for an update.
+- Never reorder or rewrite existing entries.
 
 Report: which file you wrote to (created or updated), and the one-line summary.

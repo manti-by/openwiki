@@ -1,14 +1,17 @@
 ---
-title: Writer Session Reuse for Wiki Agent
-date: 2026-07-22
 type: implementation
-status: resolved
+title: Writer Session Reuse for Wiki Agent
+description: Cached child writer session ID in a dotfile to avoid creating a new session on every idle/wiki-write call
+tags: [openwiki, plugin]
+generated: { by: opencode/agent, at: 2026-07-22T12:00:00Z }
+status: stable
+resolution: resolved
+date: 2026-07-22
 session_id: ses_077418c7bffeUy7XEbVWJPr7sC
 services: []
-branch: -
+branch: "-"
 tickets: []
-tags: [openwiki, plugin]
-related: [2026-07-28-warp-notification-flicker-fix.md]
+related: [pages/2026-07-28-warp-notification-flicker-fix]
 ---
 
 # Writer Session Reuse for Wiki Agent

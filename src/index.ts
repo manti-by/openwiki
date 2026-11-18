@@ -57,7 +57,7 @@ async function installWiki(directory: string, projectName: string): Promise<{ fi
   await fs.mkdir(root, { recursive: true })
 
   let filesWritten = 0
-  for (const file of ["README.md", "TEMPLATE.md", "INDEX.md", "QUESTIONS.md"]) {
+  for (const file of ["README.md", "TEMPLATE.md", "index.md", "log.md", "QUESTIONS.md"]) {
     const dest = path.join(root, file)
     if (await exists(dest)) continue
 

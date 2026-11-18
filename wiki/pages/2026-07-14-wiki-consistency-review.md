@@ -1,19 +1,17 @@
 ---
-title: Wiki Consistency Review and Index Repair
-date: 2026-07-14
 type: investigation
-status: resolved
+title: Wiki Consistency Review and Index Repair
+description: Reviewed all 6 wiki pages for cross-page consistency; fixed INDEX.md link, missing entry, and duplicate session_id notes.
+tags: [wiki, housekeeping, consistency]
+generated: { by: opencode/agent, at: 2026-07-14T12:00:00Z }
+status: stable
+resolution: resolved
+date: 2026-07-14
 session_id: ses_0a01d9ddcffe40I9K8EXXfWIcV
 services: []
-branch: -
+branch: "-"
 tickets: []
-tags: [wiki, housekeeping, consistency]
-related:
-  - 2026-07-13-plugin-load-and-crash.md
-  - 2026-07-13-project-audit.md
-  - 2026-07-13-update-wiki-write-docs.md
-  - 2026-07-13-comprehensive-project-exploration.md
-  - 2026-07-14-js-to-typescript-migration.md
+related: [pages/2026-07-13-project-audit, pages/2026-07-13-comprehensive-project-exploration, pages/2026-07-13-plugin-load-and-crash, pages/2026-07-13-update-wiki-write-docs, pages/2026-07-14-js-to-typescript-migration]
 ---
 
 # Wiki Consistency Review and Index Repair
@@ -67,4 +65,4 @@ Regenerated the `## By topic` section of `wiki/INDEX.md` with clusters ordered l
 
 ## References
 
-- Related: [[2026-07-13-project-audit]], [[2026-07-13-comprehensive-project-exploration]], [[2026-07-13-plugin-load-and-crash]], [[2026-07-13-update-wiki-write-docs]], [[2026-07-14-js-to-typescript-migration]]
+- Related: [Project Structure and Documentation Audit](/pages/2026-07-13-project-audit.md), [Comprehensive Project Exploration and Audit](/pages/2026-07-13-comprehensive-project-exploration.md), [Troubleshooting Plugin Load and Crash Loop](/pages/2026-07-13-plugin-load-and-crash.md), [Revalidate and Update Documentation, Verify openwiki_write Tool](/pages/2026-07-13-update-wiki-write-docs.md), [JavaScript-to-TypeScript Migration with Bun](/pages/2026-07-14-js-to-typescript-migration.md)

@@ -1,6 +1,6 @@
 ---
 name: Merge duplicated wiki pages
-description: Find and merge near-duplicate wiki pages (at least ~85% similar, including exact duplicates), keeping the most recent version.
+description: Find and merge near-duplicate OKF wiki pages (at least ~85% similar, including exact duplicates), keeping the most recent version.
 agent: build
 license: AGPL-3.0
 ---
@@ -9,8 +9,9 @@ You are the Wiki Dedup Agent. Read `wiki/README.md` and `wiki/TEMPLATE.md`
 for conventions, then work through every page under `wiki/pages/`.
 
 1. **Read all pages.** Read every `.md` file in `wiki/pages/`. Parse the
-   frontmatter (title, date, type, status, session_id, services, tickets,
-   tags, related) and the full body for each page.
+   frontmatter (title, description, date, type, status, resolution,
+   session_id, services, tickets, tags, related) and the full body for each
+   page.
 
 2. **Pairwise comparison.** Compare every page against every other page once.
    For each pair, assess semantic similarity of the subject matter and content.
@@ -25,13 +26,13 @@ for conventions, then work through every page under `wiki/pages/`.
 3. **Decide what to merge.** Only auto-merge pairs that are the same session:
    identical `session_id`, or clearly the same session recorded twice. For
    pages from distinct sessions, do NOT merge — instead cross-link the two
-   pages: add each to the other's `related` frontmatter **and** add a
-   reciprocal body `[[...]]` link on both pages (the consistency agent
-   requires the two representations to stay in sync), then move on. If the
-   two pages make materially conflicting claims (opposite statuses,
-   contradicting facts), do NOT auto-merge: verify which claim is current
-   against the codebase/docs first, or file a question in
-   `wiki/QUESTIONS.md` and skip the pair.
+   pages: add a reciprocal body link on each (`[<Other title>](/pages/<other>
+   .md)`, the OKF link form) and mirror it in the other page's `related:`
+   frontmatter as a concept ID (the consistency agent requires the two
+   representations to stay in sync), then move on. If the two pages make
+   materially conflicting claims (opposite statuses, contradicting facts), do
+   NOT auto-merge: verify which claim is current against the codebase/docs
+   first, or file a question in `wiki/QUESTIONS.md` and skip the pair.
 
 4. **Merge each eligible pair.** For each near-duplicate pair, pick a
    **survivor** filename and merge the second page into it:
@@ -43,31 +44,37 @@ for conventions, then work through every page under `wiki/pages/`.
      rename unless both are equally good, in which case use the one whose
      title is more descriptive.
    - Merge frontmatter: keep the survivor's `title`, `date`, `session_id`,
-     `type`, `status`, `branch`. Union `services`, `tickets`, `tags`, and
-     `related` (deduplicated). When singular fields disagree, keep the value
-     from the page whose claims you verified in step 3 and note the choice in
-     the body. Remove BOTH the survivor filename and the deleted filename from
-     the merged `related` list — a page must not link to itself.
+     `type`, `status`, `resolution`, `branch`, and `description`. Union
+     `services`, `tickets`, `tags`, and `related` (deduplicated). When
+     singular fields disagree, keep the value from the page whose claims you
+     verified in step 3 and note the choice in the body. Refresh the
+     survivor's `generated.at` to the merge time (keep its `generated.by`).
+     Remove BOTH the survivor's and the deleted page's entries from the
+     merged `related` list — a page must not link to itself.
    - Merge body: combine unique body sections from both pages, deduplicating
      identical content. Keep the survivor's TL;DR unless the duplicate's is
      strictly better (more complete, more accurate). Preserve and rewrite
-     cross-links (`[[...]]`) from both pages so nothing points at the deleted
-     filename.
+     cross-links from both pages — `[Title](/pages/<filename>.md)` — so
+     nothing points at the deleted filename.
    - Write the merged page back to the survivor's file path.
 
 5. **Clean up.** Delete the duplicate page file from `wiki/pages/`.
 
 6. **Update metadata.** After each merge, update every wiki file that
    references the deleted page:
-   - `wiki/INDEX.md` — remove the deleted entry from `## Pages` and from
-     `## By topic`; if the survivor's title or summary changed, update its
-     entry in both sections. Keep newest-first order.
-   - `wiki/QUESTIONS.md` — point any `**Pages:**` reference at the survivor or
+   - `wiki/index.md` — remove the deleted entry from `# Pages` and from
+     `# By topic`; if the survivor's title or description changed, update its
+     entry in both sections. Keep newest-first order and the `okf_version`
+     frontmatter block.
+   - `wiki/QUESTIONS.md` — point any `**Pages:**` link at the survivor or
      drop the deleted filename.
+   - `wiki/log.md` — under today's `## YYYY-MM-DD` heading (create it,
+     newest first, if needed), add `* **Update**: Merged <deleted filename>
+     into [<survivor title>](pages/<survivor>.md).`
    - `wiki/.sessions.json` — redirect every mapping whose value is
      the deleted filename to the survivor; drop any stale entry whose key is a
      different session id but whose value is the survivor filename.
-   - Every remaining page — rewrite `related:` frontmatter and body `[[...]]`
+   - Every remaining page — rewrite `related:` frontmatter entries and body
      links that reference the deleted filename to point at the survivor (or
      remove them if the content was fully merged).
 
@@ -76,4 +83,4 @@ for conventions, then work through every page under `wiki/pages/`.
 
 Report: how many duplicate pairs were found, which pages were merged (survivor
 ← deleted), which distinct-session pairs were cross-linked instead, and what
-changed in the INDEX.
+changed in the index and log.

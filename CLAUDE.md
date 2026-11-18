@@ -36,7 +36,7 @@ Two-file source tree, all in `src/`:
 ### Install flow
 
 1. `installCommands` ensures `<project>/.opencode/commands/` exists, then copies every `commands/*.md` into it, skipping any file that already exists (never overwrites a user-customised command).
-2. `scaffoldWiki` ensures `<project>/wiki/` exists, then writes each template (`README.md`, `TEMPLATE.md`, `INDEX.md`, `QUESTIONS.md`) with `<PROJECT_NAME>` substituted to the directory name, skipping any file that already exists.
+2. `scaffoldWiki` ensures `<project>/wiki/` exists, then writes each template (`README.md`, `TEMPLATE.md`, `index.md`, `log.md`, `QUESTIONS.md`) with `<PROJECT_NAME>` substituted to the directory name, skipping any file that already exists.
 
 Both steps are idempotent and safe to call repeatedly.
 
@@ -46,7 +46,7 @@ Command definitions, installed into `.opencode/commands/` on plugin load: `/wiki
 
 ### Templates vs. live wiki
 
-`templates/` holds the bundled scaffold (`README.md`, `TEMPLATE.md`, `INDEX.md`, `QUESTIONS.md`) copied into a project's `wiki/` on init, with `<PROJECT_NAME>` substituted. `wiki/` in this repo is OpenWiki's own dogfooded wiki, not a template — don't confuse the two when editing.
+`templates/` holds the bundled scaffold (`README.md`, `TEMPLATE.md`, `index.md`, `log.md`, `QUESTIONS.md`) copied into a project's `wiki/` on init, with `<PROJECT_NAME>` substituted. `wiki/` in this repo is OpenWiki's own dogfooded wiki, not a template — don't confuse the two when editing.
 
 ## Key constraints
 

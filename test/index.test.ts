@@ -35,7 +35,7 @@ test("plugin load installs every skill and writes every wiki scaffold file", asy
     assert.ok(content.length > 0, `${skill}/SKILL.md should be non-empty`)
   }
 
-  for (const file of ["README.md", "TEMPLATE.md", "INDEX.md", "QUESTIONS.md"]) {
+  for (const file of ["README.md", "TEMPLATE.md", "index.md", "log.md", "QUESTIONS.md"]) {
     const content = await fs.readFile(path.join(dir, "wiki", file), "utf8")
     assert.ok(content.length > 0, `${file} should be non-empty`)
   }
@@ -46,7 +46,7 @@ test("wiki scaffold substitutes <PROJECT_NAME> with the directory name", async (
   const projectName = path.basename(dir)
   await OpenWiki({ client: {} as never, directory: dir })
 
-  for (const file of ["README.md", "INDEX.md", "QUESTIONS.md"]) {
+  for (const file of ["README.md", "index.md", "QUESTIONS.md"]) {
     const content = await fs.readFile(path.join(dir, "wiki", file), "utf8")
     assert.ok(content.includes(projectName), `${file} should have project name substituted`)
   }
@@ -70,7 +70,7 @@ test("plugin load does not overwrite a pre-existing wiki file", async () => {
   await OpenWiki({ client: {} as never, directory: dir })
 
   assert.equal(await fs.readFile(path.join(dir, "wiki", "README.md"), "utf8"), "CUSTOM README")
-  for (const file of ["TEMPLATE.md", "INDEX.md", "QUESTIONS.md"]) {
+  for (const file of ["TEMPLATE.md", "index.md", "log.md", "QUESTIONS.md"]) {
     const content = await fs.readFile(path.join(dir, "wiki", file), "utf8")
     assert.ok(content.length > 0, `${file} should still be written even when README was pre-seeded`)
   }
@@ -84,7 +84,7 @@ test("plugin load is a no-op for files that already exist on a re-load", async (
   for (const skill of skills) {
     await fs.writeFile(path.join(dir, ".opencode", "skills", skill, "SKILL.md"), `SEED ${skill}`, "utf8")
   }
-  for (const file of ["README.md", "TEMPLATE.md", "INDEX.md", "QUESTIONS.md"]) {
+  for (const file of ["README.md", "TEMPLATE.md", "index.md", "log.md", "QUESTIONS.md"]) {
     await fs.writeFile(path.join(dir, "wiki", file), `SEED ${file}`, "utf8")
   }
 
@@ -97,7 +97,7 @@ test("plugin load is a no-op for files that already exist on a re-load", async (
       `${skill}/SKILL.md should be untouched on a re-load`,
     )
   }
-  for (const file of ["README.md", "TEMPLATE.md", "INDEX.md", "QUESTIONS.md"]) {
+  for (const file of ["README.md", "TEMPLATE.md", "index.md", "log.md", "QUESTIONS.md"]) {
     assert.equal(
       await fs.readFile(path.join(dir, "wiki", file), "utf8"),
       `SEED ${file}`,

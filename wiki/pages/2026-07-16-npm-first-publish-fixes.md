@@ -1,21 +1,24 @@
 ---
-title: First npm Publish — Name Collision, Version, and Auth Fixes
-date: 2026-07-16
 type: implementation
-status: resolved
+title: First npm Publish — Name Collision, Version, and Auth Fixes
+description: Fixed npm name collision, invalid semver version, dead workflow dispatch input, local provenance error, and GitHub Actions ENEEDAUTH; merged/revalidated project docs
+tags: [npm, publishing, ci, packaging, docs]
+generated: { by: opencode/agent, at: 2026-07-16T12:00:00Z }
+status: stable
+resolution: resolved
+date: 2026-07-16
 session_id: 6f5d8ee8-9516-4ba0-8a24-285b49fb1f91
 services: []
 branch: master
 tickets: []
-tags: [npm, publishing, ci, packaging, docs]
-related: [2026-07-14-npm-package-publishing-setup.md]
+related: [pages/2026-07-14-npm-package-publishing-setup]
 ---
 
 # First npm Publish — Name Collision, Version, and Auth Fixes
 
 ## TL;DR
 
-Follow-up to [[2026-07-14-npm-package-publishing-setup]]: walked through the project's actual
+Follow-up to [npm Package Publishing Setup](/pages/2026-07-14-npm-package-publishing-setup.md): walked through the project's actual
 first publish attempt and fixed everything that broke along the way — an npm package-name
 collision, an invalid semver version, a dead `workflow_dispatch` input, a local provenance
 error, and a GitHub Actions auth failure. Also merged/revalidated `AGENTS.md`/`DESCRIPTION.md`/`DOCS.md`
@@ -123,5 +126,5 @@ added a Node setup step ahead of the publish step, keeping Bun for install/build
 
 ## References
 
-- Related: [[2026-07-14-npm-package-publishing-setup]]
+- Related: [npm Package Publishing Setup](/pages/2026-07-14-npm-package-publishing-setup.md)
 - External: —

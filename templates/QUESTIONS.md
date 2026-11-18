@@ -1,3 +1,10 @@
+---
+type: Wiki Questions
+title: <PROJECT_NAME> Wiki — Open Questions
+description: Discrepancies between wiki pages that could not be resolved from the codebase, awaiting a human answer.
+tags: [meta, questions]
+---
+
 # <PROJECT_NAME> Wiki — Open Questions
 
 Open questions about wiki discrepancies, awaiting a human answer. When a question
@@ -12,7 +19,7 @@ _Newest first. Entry format:_
 ### Q-001 — <short title of the discrepancy>
 
 - **Date:** YYYY-MM-DD
-- **Pages:** [[<page-a-filename-without-.md>]], [[<page-b-filename-without-.md>]]
+- **Pages:** [Page A](/pages/<page-a-filename>.md), [Page B](/pages/<page-b-filename>.md)
 - **Discrepancy:** <what the pages claim, and how the claims conflict>
 - **Checked:** <sources consulted and why they didn't settle it — codebase paths, MCPs, docs>
 - **Answer:** _(human writes here)_

@@ -1,13 +1,16 @@
 ---
-title: npm Package Publishing Setup
-date: 2026-07-14
 type: implementation
-status: resolved
+title: npm Package Publishing Setup
+description: Added npm publish metadata, Makefile targets, and CI workflow for provenance-tagged releases
+tags: [npm, publishing, ci, build]
+generated: { by: opencode/agent, at: 2026-07-14T12:00:00Z }
+status: stable
+resolution: resolved
+date: 2026-07-14
 session_id: ses_09ebdf957ffeNbQ4X20fFQmw1r
 services: []
-branch: -
+branch: "-"
 tickets: []
-tags: [npm, publishing, ci, build]
 related: []
 ---
 

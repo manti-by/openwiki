@@ -1,14 +1,17 @@
 ---
-title: Archive and AGENTS-File Commands
-date: 2026-08-09
 type: implementation
-status: resolved
-session_id: -
+title: Archive and AGENTS-File Commands
+description: Added /wiki-archive (retires old pages, merging durable content into current pages and moving originals to wiki/archive/) and /wiki-agents-file (revalidates AGENTS.md against code, wiki, and git log); line-wrapped command frontmatter; bumped to 0.4.1-a
+tags: [openwiki, commands, archive, agents-file, maintenance]
+generated: { by: opencode/agent, at: 2026-08-09T12:00:00Z }
+status: stable
+resolution: resolved
+date: 2026-08-09
+session_id: "-"
 services: []
 branch: master
 tickets: []
-tags: [openwiki, commands, archive, agents-file, maintenance]
-related: [2026-08-06-install-only-plugin-refactor.md]
+related: [pages/2026-08-06-install-only-plugin-refactor]
 ---
 
 # Archive and AGENTS-File Commands
@@ -28,7 +31,7 @@ lint, typecheck, and all 8 tests pass.
 
 ## Overview
 
-The [[2026-08-06-install-only-plugin-refactor]] session established the plugin's shape: on load
+The [Install-Only Plugin Refactor](/pages/2026-08-06-install-only-plugin-refactor.md) session established the plugin's shape: on load
 it copies every `commands/*.md` into `.opencode/commands/` and scaffolds `wiki/`, both idempotent.
 That means the command set is the plugin's entire feature surface — adding a maintenance command is
 a pure file addition, no code. This session added two: one to keep the wiki from growing stale
@@ -93,7 +96,7 @@ markdown list nesting reads correctly. Purely cosmetic — the prompts' behavior
   `wiki-archive.md` in three places (fresh-install check, no-overwrite seed, no-op re-load check).
 - `package.json`: `0.4.0-b` → `0.4.1-a` (interim prerelease tag, as before).
 
-No `src/` change: the factory already globs `commands/*.md` ([[2026-08-06-install-only-plugin-refactor]]),
+No `src/` change: the factory already globs `commands/*.md` ([Install-Only Plugin Refactor](/pages/2026-08-06-install-only-plugin-refactor.md)),
 so the two new prompts install automatically.
 
 ## Test Results
@@ -116,5 +119,5 @@ $ bun run lint && bun run typecheck && bun test
 
 ## References
 
-- Related: [[2026-08-06-install-only-plugin-refactor]]
+- Related: [Install-Only Plugin Refactor](/pages/2026-08-06-install-only-plugin-refactor.md)
 - External: [OpenCode Commands](https://opencode.ai/docs/commands/)

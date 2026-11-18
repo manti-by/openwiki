@@ -1,11 +1,17 @@
+---
+okf_version: "0.2"
+---
+
 # OpenWiki Wiki — Index
 
-Session knowledge base for the OpenWiki project - one Markdown page per debugging
-chase, investigation, code review, or set of changes. See [README.md](README.md) for conventions
-and [TEMPLATE.md](TEMPLATE.md) for the page template. New pages are created or updated on demand
-with `/wiki-update`; the plugin only scaffolds the wiki.
+OKF v0.2 knowledge bundle for the OpenWiki project - one concept per session page
+(a debugging chase, investigation, code review, or set of changes). See [README.md](README.md)
+for conventions and [TEMPLATE.md](TEMPLATE.md) for the page template. New pages are created
+or updated on demand with `/wiki-sync`; the plugin only scaffolds the wiki.
 
-## Pages
+# Pages
+
+_Newest first._
 
 - [Skills Directory Migration](pages/2026-09-17-skills-directory-migration.md) — Replaced flat commands/\*.md install with a recursive skills/ tree copy; each skill is now a subdirectory containing SKILL.md; rewrote installCommands and updated all tests (2026-09-17)
 - [Archive and AGENTS-File Commands](pages/2026-08-09-archive-and-agents-file-commands.md) — Added /wiki-archive (retires old pages, merging durable content into current pages and moving originals to wiki/archive/) and /wiki-agents-file (revalidates AGENTS.md against code, wiki, and git log); line-wrapped command frontmatter; bumped to 0.4.1-a (2026-08-09)
@@ -30,9 +36,8 @@ with `/wiki-update`; the plugin only scaffolds the wiki.
 - [Project Structure and Documentation Audit](pages/2026-07-13-project-audit.md) — Audit of project structure and docs; found three discrepancies in command listings and plugin naming. (2026-07-13)
 - [Revalidate and Update Documentation, Verify openwiki_write Tool](pages/2026-07-13-update-wiki-write-docs.md) — Cross-referenced docs against codebase, fixed gaps, and verified /wiki-write tool end-to-end (2026-07-13)
 - [Comprehensive Project Exploration and Audit](pages/2026-07-13-comprehensive-project-exploration.md) — Complete verbatim file-level inventory of all 37 project files (2026-07-13)
-  _Newest first._
 
-## By topic
+# By topic
 
 _Topic clusters maintained by the Consistency Agent; topics with the most pages first._
 

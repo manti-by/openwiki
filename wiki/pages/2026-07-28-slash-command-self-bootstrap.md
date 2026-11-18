@@ -1,14 +1,17 @@
 ---
-title: Self-Installing Slash Commands on Plugin Load
-date: 2026-07-28
 type: implementation
-status: resolved
-session_id: -
+title: Self-Installing Slash Commands on Plugin Load
+description: Plugin now auto-installs four /wiki-\* commands on load via `installCommandsIfMissing`, solving the chicken-and-egg bootstrap problem; shared helper extracted; docs updated; bumped to rc4
+tags: [openwiki, plugin, commands, bootstrap, opencode]
+generated: { by: opencode/agent, at: 2026-07-28T12:00:00Z }
+status: stable
+resolution: resolved
+date: 2026-07-28
+session_id: "-"
 services: []
 branch: master
 tickets: []
-tags: [openwiki, plugin, commands, bootstrap, opencode]
-related: [2026-07-28-warp-notification-flicker-fix.md, 2026-08-06-install-only-plugin-refactor.md]
+related: [pages/2026-07-28-warp-notification-flicker-fix, pages/2026-08-06-install-only-plugin-refactor]
 ---
 
 # Self-Installing Slash Commands on Plugin Load
@@ -179,8 +182,8 @@ $ bun run lint && bun run typecheck && bun test
 
 ## References
 
-- Related: [[2026-07-28-warp-notification-flicker-fix]]
-- Related: [[2026-08-06-install-only-plugin-refactor]]
+- Related: [Fix Warp Notification Flicker from the Background Writer Session](/pages/2026-07-28-warp-notification-flicker-fix.md)
+- Related: [Install-Only Plugin Refactor](/pages/2026-08-06-install-only-plugin-refactor.md)
 - Source: `packages/opencode/src/plugin/shared.ts:readV1Plugin` (default export is mandatory)
 - Source: `packages/opencode/src/plugin/index.ts:applyPlugin` (calls `readV1Plugin` in `detect` mode, silently returns when the default is missing)
 - External: [OpenCode Plugins](https://opencode.ai/docs/plugins/)

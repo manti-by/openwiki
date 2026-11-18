@@ -1,0 +1,64 @@
+---
+okf_version: "0.2"
+---
+
+# OpenWiki Wiki — Index
+
+OKF v0.2 knowledge bundle for the OpenWiki project - one concept per session page
+(a debugging chase, investigation, code review, or set of changes). See [README.md](README.md)
+for conventions and [TEMPLATE.md](TEMPLATE.md) for the page template. New pages are created
+or updated on demand with `/wiki-sync`; the plugin only scaffolds the wiki.
+
+# Pages
+
+_Newest first._
+
+- [Skills Directory Migration](pages/2026-09-17-skills-directory-migration.md) — Replaced flat commands/\*.md install with a recursive skills/ tree copy; each skill is now a subdirectory containing SKILL.md; rewrote installCommands and updated all tests (2026-09-17)
+- [Archive and AGENTS-File Commands](pages/2026-08-09-archive-and-agents-file-commands.md) — Added /wiki-archive (retires old pages, merging durable content into current pages and moving originals to wiki/archive/) and /wiki-agents-file (revalidates AGENTS.md against code, wiki, and git log); line-wrapped command frontmatter; bumped to 0.4.1-a (2026-08-09)
+- [Install-Only Plugin Refactor](pages/2026-08-06-install-only-plugin-refactor.md) — Stripped OpenWiki to an install-only plugin (copy commands + scaffold wiki/, no tools/events/agents); replaced /wiki-init and /wiki-write with a self-contained /wiki-update writer command; dropped @opencode-ai/plugin (2026-08-06)
+- [Self-Installing Slash Commands on Plugin Load](pages/2026-07-28-slash-command-self-bootstrap.md) — Plugin now auto-installs four /wiki-\* commands on load via `installCommandsIfMissing`, solving the chicken-and-egg bootstrap problem; shared helper extracted; docs updated; bumped to rc4 (2026-07-28)
+- [Fix Warp Notification Flicker from the Background Writer Session](pages/2026-07-28-warp-notification-flicker-fix.md) — Writer session now created with a parentID so Warp's opencode plugin suppresses its lifecycle notifications; idle handler skips background/child sessions (2026-07-28)
+- [Writer Session Reuse for Wiki Agent](pages/2026-07-22-writer-session-reuse.md) — Cached child writer session ID in a dotfile to avoid creating a new session on every idle/wiki-write call (2026-07-22)
+- [First npm Publish — Name Collision, Version, and Auth Fixes](pages/2026-07-16-npm-first-publish-fixes.md) — Fixed npm name collision, invalid semver version, dead workflow dispatch input, local provenance error, and GitHub Actions ENEEDAUTH; merged/revalidated project docs (2026-07-16)
+- [Security Review and Biome Migration](pages/2026-07-16-security-review-and-biome-migration.md) — Found and fixed a path-traversal bug, a dead dependency, and a stale package name; migrated linting/formatting from ESLint to Biome (2026-07-16)
+- [OpenWiki Plugin Design Spec](pages/2026-07-15-openwiki-plugin-design-spec.md) — Canonical design spec for the plugin (wiki layout, Wiki/Consistency/Dedup Agents, config, tech stack), converted from the repo-root DOCS.md (2026-07-15)
+- [First /wiki-dedup Command Run — Audit Pair Merged](pages/2026-07-14-first-dedup-command-run.md) — Exercised the dedup command against the live wiki; merged the audit pair, confirmed architecture triplicate was already handled, deleted 3 files (2026-07-14)
+- [Wiki Deduplication Command](pages/2026-07-14-wiki-dedup-command.md) — Created /wiki-dedup command to find and merge near-duplicate wiki pages; also repaired INDEX.md with missing entries and topic clusters (2026-07-14)
+- [JavaScript-to-TypeScript Migration with Bun](pages/2026-07-14-js-to-typescript-migration.md) — Migrated project from JS to TypeScript, switched to bun, updated toolchain (2026-07-14)
+- [Wiki Consistency Review and Index Repair](pages/2026-07-14-wiki-consistency-review.md) — Reviewed all 6 wiki pages for cross-page consistency; fixed INDEX.md link, missing entry, and duplicate session_id notes. (2026-07-14)
+- [Systematic OpenWiki Codebase Exploration and Architecture Analysis](pages/2026-07-14-systematic-codebase-exploration-and-architecture.md) — Full architectural reference: plugin wiring, Wiki Agent lifecycle, Consistency Agent workflow, command registration, and wiki page schema (2026-07-14)
+- [Duplicate Wiki Page Cleanup from Nested Agent Evaluations](pages/2026-07-14-duplicate-page-cleanup.md) — Identified and merged 3 near-duplicate wiki pages created by independent Wiki Agent evaluations of the same transcript (2026-07-14)
+- [Wiki Agent Maintenance Guard](pages/2026-07-14-wiki-maintenance-guard.md) — Added two-layer guard (event handler regex + prompt instruction) to prevent Wiki Agent from self-documenting maintenance commands like /wiki-dedup and /wiki-consistency (2026-07-14)
+- [Wiki Dedup Command and Maintenance Guard](pages/2026-07-14-wiki-dedup-and-maintenance-guard.md) — Added /wiki-dedup command for merging ~85-90% similar pages and a two-layer guard to prevent wiki agent from self-documenting during maintenance commands (2026-07-14)
+- [Recursive Wiki Agent Evaluations Causing Duplicate Pages](pages/2026-07-14-recursive-agent-evaluation-duplicates.md) — Investigation into how independent Wiki Agent evaluations of the same transcript produced duplicate pages, with root cause and resolution via dedup (2026-07-14)
+- [npm Package Publishing Setup](pages/2026-07-14-npm-package-publishing-setup.md) — Added npm publish metadata, Makefile targets, and CI workflow for provenance-tagged releases (2026-07-14)
+- [Troubleshooting Plugin Load and Crash Loop](pages/2026-07-13-plugin-load-and-crash.md) — Resolved issues with plugin discovery, missing deps, and JSON parsing crashes. (2026-07-13)
+- [Project Structure and Documentation Audit](pages/2026-07-13-project-audit.md) — Audit of project structure and docs; found three discrepancies in command listings and plugin naming. (2026-07-13)
+- [Revalidate and Update Documentation, Verify openwiki_write Tool](pages/2026-07-13-update-wiki-write-docs.md) — Cross-referenced docs against codebase, fixed gaps, and verified /wiki-write tool end-to-end (2026-07-13)
+- [Comprehensive Project Exploration and Audit](pages/2026-07-13-comprehensive-project-exploration.md) — Complete verbatim file-level inventory of all 37 project files (2026-07-13)
+
+# By topic
+
+_Topic clusters maintained by the Consistency Agent; topics with the most pages first._
+
+### Project Audit & Documentation
+
+- [Project Structure and Documentation Audit](pages/2026-07-13-project-audit.md)
+- [Comprehensive Project Exploration and Audit](pages/2026-07-13-comprehensive-project-exploration.md)
+- [Systematic OpenWiki Codebase Exploration and Architecture Analysis](pages/2026-07-14-systematic-codebase-exploration-and-architecture.md)
+
+### Plugin System
+
+- [Skills Directory Migration](pages/2026-09-17-skills-directory-migration.md)
+- [Troubleshooting Plugin Load and Crash Loop](pages/2026-07-13-plugin-load-and-crash.md)
+
+### Documentation & Tooling
+
+- [Archive and AGENTS-File Commands](pages/2026-08-09-archive-and-agents-file-commands.md)
+- [Revalidate and Update Documentation, Verify openwiki_write Tool](pages/2026-07-13-update-wiki-write-docs.md)
+- [Wiki Deduplication Command](pages/2026-07-14-wiki-dedup-command.md)
+
+### Build & Migration
+
+- [Skills Directory Migration](pages/2026-09-17-skills-directory-migration.md)
+- [JavaScript-to-TypeScript Migration with Bun](pages/2026-07-14-js-to-typescript-migration.md)

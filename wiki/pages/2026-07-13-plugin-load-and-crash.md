@@ -1,13 +1,16 @@
 ---
-title: Troubleshooting Plugin Load and Crash Loop
-date: 2026-07-13
 type: debug
-status: resolved
+title: Troubleshooting Plugin Load and Crash Loop
+description: Resolved issues with plugin discovery, missing deps, and JSON parsing crashes.
+tags: [plugin-fix]
+generated: { by: opencode/agent, at: 2026-07-13T12:00:00Z }
+status: stable
+resolution: resolved
+date: 2026-07-13
 session_id: ses_0a2ddf374ffe5fzwJ9UKdcmCX0
 services: [opencode, openwiki]
-branch: -
+branch: "-"
 tickets: []
-tags: [plugin-fix]
 related: []
 ---
 

@@ -1,15 +1,17 @@
 ---
-title: Wiki Agent Maintenance Guard
-date: 2026-07-14
 type: implementation
-status: resolved
+title: Wiki Agent Maintenance Guard
+description: Added two-layer guard (event handler regex + prompt instruction) to prevent Wiki Agent from self-documenting maintenance commands like /wiki-dedup and /wiki-consistency
+tags: [wiki, tooling, maintenance, event-handler]
+generated: { by: opencode/agent, at: 2026-07-14T12:00:00Z }
+status: stable
+resolution: resolved
+date: 2026-07-14
 session_id: ses_0a0196c96ffelCT1RtN4n3NiyM
 services: []
-branch: -
+branch: "-"
 tickets: []
-tags: [wiki, tooling, maintenance, event-handler]
-related:
-  - 2026-07-14-wiki-dedup-command.md
+related: [pages/2026-07-14-wiki-dedup-command]
 ---
 
 # Wiki Agent Maintenance Guard
@@ -65,4 +67,4 @@ None
 
 ## References
 
-- Related: [[2026-07-14-wiki-dedup-command]]
+- Related: [Wiki Deduplication Command](/pages/2026-07-14-wiki-dedup-command.md)

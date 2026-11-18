@@ -1,14 +1,17 @@
 ---
-title: Install-Only Plugin Refactor
-date: 2026-08-06
 type: implementation
-status: resolved
-session_id: -
+title: Install-Only Plugin Refactor
+description: Stripped OpenWiki to an install-only plugin (copy commands + scaffold wiki/, no tools/events/agents); replaced /wiki-init and /wiki-write with a self-contained /wiki-update writer command; dropped @opencode-ai/plugin
+tags: [openwiki, plugin, refactor, install-only, architecture]
+generated: { by: opencode/agent, at: 2026-08-06T12:00:00Z }
+status: stable
+resolution: resolved
+date: 2026-08-06
+session_id: "-"
 services: []
 branch: master
 tickets: []
-tags: [openwiki, plugin, refactor, install-only, architecture]
-related: [2026-07-15-openwiki-plugin-design-spec.md, 2026-07-28-slash-command-self-bootstrap.md, 2026-08-09-archive-and-agents-file-commands.md]
+related: [pages/2026-07-15-openwiki-plugin-design-spec, pages/2026-07-28-slash-command-self-bootstrap, pages/2026-08-09-archive-and-agents-file-commands]
 ---
 
 # Install-Only Plugin Refactor
@@ -28,11 +31,11 @@ instead of host-coupled code. `@opencode-ai/plugin` is gone from the dependency 
 
 ## Overview
 
-The previous architecture (built up in [[2026-07-15-openwiki-plugin-design-spec]]) coupled the
+The previous architecture (built up in [OpenWiki Plugin Design Spec](/pages/2026-07-15-openwiki-plugin-design-spec.md)) coupled the
 plugin to the OpenCode host: it imported `tool` from `@opencode-ai/plugin`, registered an event
 handler, called `client.session.create`/`prompt`/`get`/`messages` and `client.config.get`, and
 resolved a model from `openwiki.json` → first user message → host config. This session deleted
-all of that (~1090 lines) and kept only the filesystem work that [[2026-07-28-slash-command-self-bootstrap]]
+all of that (~1090 lines) and kept only the filesystem work that [Self-Installing Slash Commands on Plugin Load](/pages/2026-07-28-slash-command-self-bootstrap.md)
 already proved works: self-installing commands on plugin load, now extended to scaffold `wiki/`
 in the same pass.
 
@@ -157,12 +160,12 @@ $ bun run lint && bun run typecheck && bun test
   the helpers it relies on as a pure library the command prompt can reference.
 - `package.json` version `0.4.0-a` is an interim prerelease tag — confirm the final version
   before running `make publish`.
-- The design-spec page [[2026-07-15-openwiki-plugin-design-spec]] describes the old
+- The design-spec page [OpenWiki Plugin Design Spec](/pages/2026-07-15-openwiki-plugin-design-spec.md) describes the old
   agent architecture; it is now historical and could be marked as superseded.
 - `AGENTS.md` still notes the known `Makefile` `check` target inconsistency (runs only
   `typecheck`); the manual triple (`lint && typecheck && test`) remains the source of truth.
 
 ## References
 
-- Related: [[2026-07-15-openwiki-plugin-design-spec]], [[2026-07-28-slash-command-self-bootstrap]], [[2026-08-09-archive-and-agents-file-commands]]
+- Related: [OpenWiki Plugin Design Spec](/pages/2026-07-15-openwiki-plugin-design-spec.md), [Self-Installing Slash Commands on Plugin Load](/pages/2026-07-28-slash-command-self-bootstrap.md), [Archive and AGENTS-File Commands](/pages/2026-08-09-archive-and-agents-file-commands.md)
 - External: [OpenCode Plugins](https://opencode.ai/docs/plugins/)

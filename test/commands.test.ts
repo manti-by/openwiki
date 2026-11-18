@@ -30,7 +30,7 @@ test("every skill subdirectory contains a SKILL.md", async () => {
 })
 
 test("scaffold templates do not claim the plugin writes pages automatically", async () => {
-  const index = await fs.readFile(path.join(TEMPLATES_DIR, "INDEX.md"), "utf8")
+  const index = await fs.readFile(path.join(TEMPLATES_DIR, "index.md"), "utf8")
   assert.ok(!index.includes("automatically by the plugin"))
-  assert.match(index, /\/wiki-update/)
+  assert.match(index, /\/wiki-sync/)
 })

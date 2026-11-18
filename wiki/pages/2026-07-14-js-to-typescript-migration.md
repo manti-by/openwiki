@@ -1,13 +1,16 @@
 ---
-title: JavaScript-to-TypeScript Migration with Bun
-date: 2026-07-14
 type: implementation
-status: resolved
+title: JavaScript-to-TypeScript Migration with Bun
+description: Migrated project from JS to TypeScript, switched to bun, updated toolchain
+tags: [typescript, migration, build]
+generated: { by: opencode/agent, at: 2026-07-14T12:00:00Z }
+status: stable
+resolution: resolved
+date: 2026-07-14
 session_id: ses_0a2a57642ffefPgJ8CddbOaPLb
 services: []
-branch: -
+branch: "-"
 tickets: []
-tags: [typescript, migration, build]
 related: []
 ---
 

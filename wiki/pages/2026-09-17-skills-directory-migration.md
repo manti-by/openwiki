@@ -1,14 +1,17 @@
 ---
-title: Skills Directory Migration
-date: 2026-09-17
 type: implementation
-status: resolved
-session_id: -
-services: []
-branch: -
-tickets: []
+title: Skills Directory Migration
+description: Replaced flat commands/\*.md install with a recursive skills/ tree copy; each skill is now a subdirectory containing SKILL.md; rewrote installCommands and updated all tests
 tags: [skills, install, refactor, tests]
-related: [2026-08-06-install-only-plugin-refactor, 2026-07-28-slash-command-self-bootstrap]
+generated: { by: opencode/agent, at: 2026-09-17T12:00:00Z }
+status: stable
+resolution: resolved
+date: 2026-09-17
+session_id: "-"
+services: []
+branch: "-"
+tickets: []
+related: [pages/2026-08-06-install-only-plugin-refactor, pages/2026-07-28-slash-command-self-bootstrap]
 ---
 
 # Skills Directory Migration
@@ -118,5 +121,5 @@ test/commands.test.ts:
 
 ## References
 
-- Related: [[2026-08-06-install-only-plugin-refactor]]
-- Related: [[2026-07-28-slash-command-self-bootstrap]]
+- Related: [Install-Only Plugin Refactor](/pages/2026-08-06-install-only-plugin-refactor.md)
+- Related: [Self-Installing Slash Commands on Plugin Load](/pages/2026-07-28-slash-command-self-bootstrap.md)

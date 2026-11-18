@@ -1,13 +1,16 @@
 ---
-title: Project Structure and Documentation Audit
-date: 2026-07-13
 type: investigation
-status: reference
+title: Project Structure and Documentation Audit
+description: Audit of project structure and docs; found three discrepancies in command listings and plugin naming.
+tags: [audit, exploration, documentation]
+generated: { by: opencode/agent, at: 2026-07-13T12:00:00Z }
+status: stable
+resolution: reference
+date: 2026-07-13
 session_id: ses_0a2bb4272ffe1YREYHGaXc54Pu
 services: [core]
 branch: master
 tickets: []
-tags: [audit, exploration, documentation]
 related: []
 ---
 

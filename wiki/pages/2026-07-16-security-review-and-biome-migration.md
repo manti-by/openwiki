@@ -1,14 +1,17 @@
 ---
-title: Security Review and Biome Migration
-date: 2026-07-16
 type: implementation
-status: resolved
+title: Security Review and Biome Migration
+description: Found and fixed a path-traversal bug, a dead dependency, and a stale package name; migrated linting/formatting from ESLint to Biome
+tags: [security, code-review, tooling, biome, eslint, hygiene]
+generated: { by: opencode/agent, at: 2026-07-16T12:00:00Z }
+status: stable
+resolution: resolved
+date: 2026-07-16
 session_id: a2d4837d-2c5c-447b-9796-e8299c2c723c
 services: []
 branch: master
 tickets: []
-tags: [security, code-review, tooling, biome, eslint, hygiene]
-related: [2026-07-16-npm-first-publish-fixes.md]
+related: [pages/2026-07-16-npm-first-publish-fixes]
 ---
 
 # Security Review and Biome Migration
@@ -55,7 +58,7 @@ migration swapping the ESLint-only, no-formatter setup for Biome.
 3. **Stale unscoped package name across docs (low).**
    **File:** `opencode.json`, `README.md`, `AGENTS.md`, `CLAUDE.md`
    `package.json`'s `name` is the scoped `@manti-by/openwiki` (renamed earlier the same day, see
-   [[2026-07-16-npm-first-publish-fixes]], to dodge an npm name collision with an unrelated
+   [First npm Publish — Name Collision, Version, and Auth Fixes](/pages/2026-07-16-npm-first-publish-fixes.md), to dodge an npm name collision with an unrelated
    package), but every doc and `opencode.json`'s `"plugin": [...]` example still referenced the
    unscoped `openwiki`. Confirmed via `npm view openwiki` that the unscoped name belongs to an
    unrelated DeepAgents/LangChain CLI, so the scoped name is the one to keep.
@@ -102,5 +105,5 @@ migration swapping the ESLint-only, no-formatter setup for Biome.
 
 ## References
 
-- Related: [[2026-07-16-npm-first-publish-fixes]]
+- Related: [First npm Publish — Name Collision, Version, and Auth Fixes](/pages/2026-07-16-npm-first-publish-fixes.md)
 - External: —

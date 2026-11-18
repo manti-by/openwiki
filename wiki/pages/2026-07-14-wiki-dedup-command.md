@@ -1,15 +1,17 @@
 ---
-title: Wiki Deduplication Command
-date: 2026-07-14
 type: implementation
-status: resolved
+title: Wiki Deduplication Command
+description: Created /wiki-dedup command to find and merge near-duplicate wiki pages; also repaired INDEX.md with missing entries and topic clusters
+tags: [wiki, dedup, tooling, commands]
+generated: { by: opencode/agent, at: 2026-07-14T12:00:00Z }
+status: stable
+resolution: resolved
+date: 2026-07-14
 session_id: ses_0a011b6a0ffeq1IktMNWZtdZyt
 services: []
-branch: -
+branch: "-"
 tickets: []
-tags: [wiki, dedup, tooling, commands]
-related:
-  - 2026-07-14-wiki-consistency-review.md
+related: [pages/2026-07-14-wiki-consistency-review]
 ---
 
 # Wiki Deduplication Command
@@ -64,4 +66,4 @@ No automated tests; the command is an inline agent spec (`agent: build`) that ru
 
 ## References
 
-- Related: [[2026-07-14-wiki-consistency-review]]
+- Related: [Wiki Consistency Review and Index Repair](/pages/2026-07-14-wiki-consistency-review.md)
